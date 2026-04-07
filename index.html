@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#060912">
+<title>Crypto News Live</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Barlow+Condensed:wght@400;600;700;800;900&display=swap');
+
+:root{
+  --bg:#060912;--bg2:#0c1122;--bg3:#111830;--bg4:#18213d;
+  --border:#1e2a45;--border2:#26345a;
+  --txt1:#e2e8f8;--txt2:#7a89ad;--txt3:#3a4566;
+  --green:#00e676;--greenl:rgba(0,230,118,.1);--greenb:rgba(0,230,118,.3);
+  --red:#ff4444;--redl:rgba(255,68,68,.1);
+  --yellow:#ffd740;--yellowl:rgba(255,215,64,.1);
+  --blue:#448aff;--bluel:rgba(68,138,255,.1);
+  --orange:#ff9100;--orangel:rgba(255,145,0,.1);
+  --purple:#e040fb;--purplel:rgba(224,64,251,.1);
+  --cyan:#18ffff;--cyanl:rgba(24,255,255,.08);
+  --mono:'IBM Plex Mono',monospace;
+  --head:'Barlow Condensed',sans-serif;
+}
+
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100vh;overflow-x:hidden}
+
+body{
+  font-family:var(--mono);
+  background:var(--bg);
+  color:var(--txt1);
+  min-height:100vh;
+}
+
+/* Animated background */
+body::before{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+    radial-gradient(ellipse 60% 40% at 20% 20%, rgba(0,230,118,.04) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 60% at 80% 80%, rgba(68,138,255,.04) 0%, transparent 60%);
+}
+
+/* Scanline effect */
+body::after{
+  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);
+}
+
+.app{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:12px 12px 80px;}
+
+/* ── HEADER ── */
+.hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 0 12px;border-bottom:1px solid var(--border);
+  margin-bottom:16px;gap:10px;flex-wrap:wrap;
+}
+.brand{display:flex;align-items:center;gap:10px;}
+.brand-icon{
+  width:38px;height:38px;border-radius:10px;
+  background:linear-gradient(135deg,var(--greenl),var(--bluel));
+  border:1px solid var(--greenb);
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;
+}
+.brand-name{
+  font-family:var(--head);font-weight:900;font-size:1.5rem;
+  letter-spacing:1px;text-transform:uppercase;
+  background:linear-gradient(135deg,var(--green),var(--cyan));
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.brand-sub{font-size:.58rem;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-top:1px;}
+
+.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+
+.live-badge{
+  display:flex;align-items:center;gap:5px;
+  background:var(--greenl);border:1px solid var(--greenb);
+  border-radius:20px;padding:4px 10px;
+  font-size:.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);
+}
+.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 1.2s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+
+.last-upd{font-size:.58rem;color:var(--txt3);font-family:var(--mono);}
+
+/* ── STATS ROW ── */
+.stats{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.stat{
+  flex:1;min-width:100px;
+  background:var(--bg2);border:1px solid var(--border);border-radius:9px;
+  padding:8px 12px;position:relative;overflow:hidden;
+}
+.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
+.stat.s-green::before{background:var(--green);}
+.stat.s-red::before{background:var(--red);}
+.stat.s-yellow::before{background:var(--yellow);}
+.stat.s-blue::before{background:var(--blue);}
+.stat-val{font-family:var(--head);font-weight:900;font-size:1.3rem;letter-spacing:.5px;}
+.stat-lbl{font-size:.55rem;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin-top:1px;}
+
+/* ── FILTERS ── */
+.filter-row{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
+.filter-row input{
+  flex:1;min-width:140px;
+  background:var(--bg2);border:1px solid var(--border2);border-radius:7px;
+  padding:7px 11px;color:var(--txt1);font-family:var(--mono);font-size:.7rem;
+  outline:none;transition:border .15s;
+}
+.filter-row input:focus{border-color:var(--green);}
+.filter-row input::placeholder{color:var(--txt3);}
+
+.ftag{
+  padding:5px 11px;border-radius:20px;font-size:.6rem;font-weight:700;
+  letter-spacing:.8px;text-transform:uppercase;cursor:pointer;
+  border:1px solid var(--border);background:var(--bg2);color:var(--txt3);
+  transition:all .15s;white-space:nowrap;font-family:var(--mono);
+}
+.ftag.act{border-color:var(--green);background:var(--greenl);color:var(--green);}
+.ftag.act-red{border-color:var(--red);background:var(--redl);color:var(--red);}
+.ftag.act-yellow{border-color:var(--yellow);background:var(--yellowl);color:var(--yellow);}
+.ftag.act-blue{border-color:var(--blue);background:var(--bluel);color:var(--blue);}
+.ftag.act-orange{border-color:var(--orange);background:var(--orangel);color:var(--orange);}
+.ftag:hover{color:var(--txt1);border-color:var(--border2);}
+
+.btn-refresh{
+  padding:6px 14px;border-radius:7px;font-size:.6rem;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;cursor:pointer;
+  background:var(--green);color:#000;border:none;
+  font-family:var(--mono);transition:all .15s;white-space:nowrap;
+}
+.btn-refresh:hover{opacity:.85;}
+.btn-refresh:active{transform:scale(.96);}
+.btn-refresh:disabled{opacity:.4;cursor:not-allowed;}
+
+/* ── WATCHLIST ── */
+.watchlist{
+  background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+  padding:10px 12px;margin-bottom:12px;
+}
+.wl-title{font-size:.58rem;color:var(--txt3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;}
+.wl-tags{display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
+.wl-tag{
+  display:flex;align-items:center;gap:4px;
+  background:var(--bg3);border:1px solid var(--border2);border-radius:5px;
+  padding:3px 8px;font-size:.62rem;font-family:var(--mono);cursor:default;
+}
+.wl-tag.active{border-color:var(--cyan);color:var(--cyan);background:var(--cyanl);}
+.wl-tag .rm{cursor:pointer;color:var(--txt3);margin-left:3px;font-size:.7rem;}
+.wl-tag .rm:hover{color:var(--red);}
+.wl-add{display:flex;gap:5px;}
+.wl-inp{
+  background:var(--bg3);border:1px solid var(--border);border-radius:5px;
+  padding:4px 8px;font-family:var(--mono);font-size:.65rem;color:var(--txt1);
+  outline:none;width:80px;text-transform:uppercase;
+}
+.wl-inp:focus{border-color:var(--cyan);}
+.wl-btn{
+  background:transparent;border:1px solid var(--cyan);color:var(--cyan);
+  border-radius:5px;padding:3px 10px;font-family:var(--mono);font-size:.6rem;cursor:pointer;
+  transition:all .15s;
+}
+.wl-btn:hover{background:var(--cyanl);}
+
+/* ── NEWS FEED ── */
+.feed-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:10px;
+}
+.feed-title{
+  font-family:var(--head);font-weight:800;font-size:1rem;
+  letter-spacing:1px;text-transform:uppercase;color:var(--txt2);
+}
+.feed-count{font-size:.6rem;color:var(--txt3);}
+
+.news-item{
+  background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+  margin-bottom:8px;overflow:hidden;
+  transition:border-color .2s,transform .15s;
+  animation:slideIn .3s ease;
+  position:relative;
+}
+@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
+.news-item:hover{border-color:var(--border2);transform:translateX(2px);}
+.news-item.new-item{border-color:var(--green);animation:newPop .4s ease;}
+@keyframes newPop{0%{border-color:var(--green);box-shadow:0 0 20px var(--greenl)}100%{box-shadow:none}}
+
+.news-accent{position:absolute;top:0;left:0;width:3px;height:100%;}
+.na-bullish{background:var(--green);}
+.na-bearish{background:var(--red);}
+.na-important{background:var(--yellow);}
+.na-neutral{background:var(--blue);}
+.na-listing{background:var(--cyan);}
+.na-delisting{background:var(--orange);}
+
+.news-body{padding:10px 12px 10px 16px;}
+.news-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;}
+.news-title{
+  font-family:var(--head);font-weight:700;font-size:.9rem;
+  color:var(--txt1);flex:1;line-height:1.3;
+  text-decoration:none;
+}
+.news-title:hover{color:var(--green);}
+.news-time{font-size:.58rem;color:var(--txt3);white-space:nowrap;flex-shrink:0;margin-top:2px;}
+
+.news-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
+.news-source{
+  font-size:.58rem;color:var(--txt3);
+  background:var(--bg3);border:1px solid var(--border);
+  padding:2px 6px;border-radius:4px;
+}
+.news-tag{
+  font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
+  padding:2px 6px;border-radius:4px;
+}
+.nt-bullish{background:var(--greenl);color:var(--green);border:1px solid rgba(0,230,118,.2);}
+.nt-bearish{background:var(--redl);color:var(--red);border:1px solid rgba(255,68,68,.2);}
+.nt-important{background:var(--yellowl);color:var(--yellow);border:1px solid rgba(255,215,64,.2);}
+.nt-neutral{background:var(--bluel);color:var(--blue);border:1px solid rgba(68,138,255,.2);}
+.nt-listing{background:var(--cyanl);color:var(--cyan);border:1px solid rgba(24,255,255,.2);}
+.nt-delisting{background:var(--orangel);color:var(--orange);border:1px solid rgba(255,145,0,.2);}
+
+.coin-pills{display:flex;gap:4px;flex-wrap:wrap;}
+.coin-pill{
+  font-size:.55rem;font-weight:700;
+  background:var(--bg4);border:1px solid var(--border2);
+  padding:2px 6px;border-radius:4px;color:var(--txt2);
+  cursor:pointer;transition:all .15s;
+}
+.coin-pill:hover{border-color:var(--cyan);color:var(--cyan);}
+.coin-pill.wl{border-color:rgba(24,255,255,.4);color:var(--cyan);background:var(--cyanl);}
+
+.news-votes{
+  display:flex;align-items:center;gap:10px;margin-top:6px;
+  font-size:.58rem;color:var(--txt3);
+}
+.vote{display:flex;align-items:center;gap:3px;}
+.vote-up{color:var(--green);}
+.vote-down{color:var(--red);}
+
+/* ── BINANCE ANNOUNCEMENTS ── */
+.ann-section{margin-bottom:16px;}
+.ann-title{
+  font-family:var(--head);font-weight:800;font-size:.95rem;
+  letter-spacing:1.5px;text-transform:uppercase;color:var(--yellow);
+  margin-bottom:8px;display:flex;align-items:center;gap:8px;
+}
+.ann-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--yellowl),transparent);}
+
+.ann-item{
+  background:var(--bg2);border:1px solid rgba(255,215,64,.15);border-radius:9px;
+  padding:10px 14px;margin-bottom:6px;display:flex;align-items:flex-start;gap:10px;
+  transition:all .2s;
+}
+.ann-item:hover{border-color:rgba(255,215,64,.35);transform:translateX(2px);}
+.ann-icon{font-size:1rem;flex-shrink:0;margin-top:1px;}
+.ann-body{}
+.ann-item-title{
+  font-family:var(--head);font-weight:700;font-size:.85rem;color:var(--txt1);
+  line-height:1.3;text-decoration:none;display:block;
+}
+.ann-item-title:hover{color:var(--yellow);}
+.ann-item-time{font-size:.58rem;color:var(--txt3);margin-top:3px;}
+.ann-badge{
+  display:inline-block;font-size:.52rem;font-weight:700;text-transform:uppercase;
+  letter-spacing:.5px;padding:2px 6px;border-radius:4px;margin-right:5px;
+}
+.ab-new{background:var(--greenl);color:var(--green);border:1px solid rgba(0,230,118,.2);}
+.ab-delist{background:var(--orangel);color:var(--orange);border:1px solid rgba(255,145,0,.2);}
+.ab-list{background:var(--cyanl);color:var(--cyan);border:1px solid rgba(24,255,255,.2);}
+.ab-maint{background:var(--yellowl);color:var(--yellow);border:1px solid rgba(255,215,64,.2);}
+
+/* ── EMPTY / LOADING ── */
+.loading{
+  text-align:center;padding:48px 20px;color:var(--txt3);
+}
+.loading-spinner{
+  width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--green);
+  border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-size:.7rem;letter-spacing:1px;}
+
+.empty{text-align:center;padding:40px 20px;color:var(--txt3);}
+.empty-icon{font-size:2rem;margin-bottom:8px;opacity:.3;}
+.empty-txt{font-size:.7rem;}
+
+/* ── ERROR BAR ── */
+.err-bar{
+  background:var(--redl);border:1px solid rgba(255,68,68,.3);border-radius:8px;
+  padding:8px 12px;margin-bottom:10px;font-size:.65rem;color:var(--red);display:none;
+}
+.err-bar.show{display:block;}
+
+/* ── AUTO REFRESH ── */
+.auto-row{
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg2);border:1px solid var(--border);border-radius:8px;
+  padding:7px 12px;margin-bottom:12px;font-size:.62rem;color:var(--txt3);
+  flex-wrap:wrap;gap:10px;
+}
+.auto-row label{display:flex;align-items:center;gap:6px;cursor:pointer;}
+.tog{position:relative;width:28px;height:16px;cursor:pointer;}
+.tog input{display:none;}
+.tog-sl{position:absolute;inset:0;background:var(--bg3);border:1px solid var(--border);border-radius:20px;transition:.2s;}
+.tog-sl::before{content:'';position:absolute;left:2px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:var(--txt3);transition:.2s;}
+.tog input:checked+.tog-sl{background:rgba(0,230,118,.15);border-color:var(--green);}
+.tog input:checked+.tog-sl::before{background:var(--green);left:14px;}
+.cd-auto{color:var(--green);font-weight:700;min-width:28px;}
+select.auto-sel{
+  background:var(--bg3);border:1px solid var(--border);border-radius:5px;
+  padding:3px 6px;color:var(--txt2);font-family:var(--mono);font-size:.6rem;outline:none;
+}
+
+/* ── FOOTER ── */
+.footer{text-align:center;font-size:.55rem;color:var(--txt3);opacity:.4;padding-top:8px;}
+
+@media(max-width:500px){
+  .stats{grid-template-columns:repeat(2,1fr);}
+  .hdr{gap:8px;}
+  .brand-name{font-size:1.2rem;}
+}
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="brand">
+    <div class="brand-icon">📡</div>
+    <div>
+      <div class="brand-name">Crypto News Live</div>
+      <div class="brand-sub">CryptoPanic · Binance · Știri în timp real</div>
+    </div>
+  </div>
+  <div class="hdr-right">
+    <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+    <div class="last-upd" id="lastUpd">—</div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats">
+  <div class="stat s-green"><div class="stat-val" id="st-total" style="color:var(--green)">0</div><div class="stat-lbl">Știri totale</div></div>
+  <div class="stat s-green"><div class="stat-val" id="st-bull" style="color:var(--green)">0</div><div class="stat-lbl">Bullish</div></div>
+  <div class="stat s-red"><div class="stat-val" id="st-bear" style="color:var(--red)">0</div><div class="stat-lbl">Bearish</div></div>
+  <div class="stat s-yellow"><div class="stat-val" id="st-imp" style="color:var(--yellow)">0</div><div class="stat-lbl">Importante</div></div>
+</div>
+
+<!-- WATCHLIST -->
+<div class="watchlist">
+  <div class="wl-title">👁 Watchlist coinuri — știri filtrate automat</div>
+  <div class="wl-tags" id="wlTags">
+    <div class="wl-add">
+      <input class="wl-inp" id="wlInp" placeholder="BTC" maxlength="12"
+        onkeydown="if(event.key==='Enter')addWatchCoin()">
+      <button class="wl-btn" onclick="addWatchCoin()">+ Adaugă</button>
+    </div>
+  </div>
+</div>
+
+<!-- AUTO REFRESH -->
+<div class="auto-row">
+  <label>
+    <div class="tog"><input type="checkbox" id="autoChk" checked onchange="toggleAuto()"><div class="tog-sl"></div></div>
+    Auto-refresh
+  </label>
+  <span>la fiecare</span>
+  <select class="auto-sel" id="autoInt" onchange="changeInterval()">
+    <option value="60">1 min</option>
+    <option value="120">2 min</option>
+    <option value="300" selected>5 min</option>
+    <option value="600">10 min</option>
+  </select>
+  <span id="cdWrap" style="display:flex;align-items:center;gap:4px">
+    Următor refresh: <span class="cd-auto" id="cdVal">--</span>
+  </span>
+  <button class="btn-refresh" id="btnRefresh" onclick="loadAll()">↺ Refresh acum</button>
+</div>
+
+<!-- FILTERS -->
+<div class="filter-row">
+  <input type="text" id="searchInp" placeholder="🔍 Caută știre sau coin..." oninput="applyFilters()">
+  <div class="ftag act" id="ft-all" onclick="setFilter('all',this)">Toate</div>
+  <div class="ftag" id="ft-bullish" onclick="setFilter('bullish',this,'act')">🟢 Bullish</div>
+  <div class="ftag" id="ft-bearish" onclick="setFilter('bearish',this,'act-red')">🔴 Bearish</div>
+  <div class="ftag" id="ft-important" onclick="setFilter('important',this,'act-yellow')">⚡ Importante</div>
+  <div class="ftag" id="ft-listing" onclick="setFilter('listing',this,'act-blue')">📋 Listări</div>
+  <div class="ftag" id="ft-watchlist" onclick="setFilter('watchlist',this,'act-blue')">👁 Watchlist</div>
+</div>
+
+<!-- ERROR -->
+<div class="err-bar" id="errBar"></div>
+
+<!-- BINANCE ANNOUNCEMENTS -->
+<div class="ann-section" id="annSection" style="display:none">
+  <div class="ann-title">📢 Anunțuri Binance</div>
+  <div id="annList"></div>
+</div>
+
+<!-- NEWS FEED -->
+<div class="feed-hdr">
+  <div class="feed-title">📰 Feed știri crypto</div>
+  <div class="feed-count" id="feedCount"></div>
+</div>
+<div id="newsList"></div>
+
+<div class="footer">Date: CryptoPanic API · Binance Announcements · Refresh automat</div>
+</div>
+
+<script>
+// ── SURSE RSS (toate permit CORS via rss2json) ──
+const RSS2JSON = 'https://api.rss2json.com/v1/api.json?rss_url=';
+const SOURCES = [
+  { name:'CoinDesk',      url:'https://www.coindesk.com/arc/outboundfeeds/rss/', emoji:'📰' },
+  { name:'CoinTelegraph', url:'https://cointelegraph.com/rss', emoji:'📡' },
+  { name:'CryptoSlate',   url:'https://cryptoslate.com/feed/', emoji:'🔷' },
+  { name:'Decrypt',       url:'https://decrypt.co/feed', emoji:'🔓' },
+  { name:'Bitcoin.com',   url:'https://news.bitcoin.com/feed/', emoji:'₿' },
+  { name:'Binance Blog',  url:'https://www.binance.com/en/blog/rss', emoji:'🔶' },
+];
+
+let allNews = [];
+let watchlist = JSON.parse(localStorage.getItem('cnews_watch')) || ['BTC','ETH','SOL','BNB','HYPE'];
+let currentFilter = 'all';
+let cdTimer = null;
+let cdSec = 300;
+let isLoading = false;
+let knownIds = new Set();
+
+// ── INIT ──
+renderWatchlist();
+loadAll();
+startAutoRefresh();
+
+// ── WATCHLIST ──
+function renderWatchlist(){
+  const c = document.getElementById('wlTags');
+  const add = c.querySelector('.wl-add');
+  c.querySelectorAll('.wl-tag').forEach(t => t.remove());
+  watchlist.forEach(coin => {
+    const d = document.createElement('div');
+    d.className = 'wl-tag active';
+    d.innerHTML = `${coin}<span class="rm" onclick="removeWatchCoin('${coin}')">✕</span>`;
+    c.insertBefore(d, add);
+  });
+}
+function addWatchCoin(){
+  const inp = document.getElementById('wlInp');
+  const coin = inp.value.trim().toUpperCase().replace(/[^A-Z0-9]/g,'');
+  if(!coin || watchlist.includes(coin)) return;
+  watchlist.push(coin);
+  localStorage.setItem('cnews_watch', JSON.stringify(watchlist));
+  inp.value = '';
+  renderWatchlist();
+  applyFilters();
+}
+function removeWatchCoin(coin){
+  watchlist = watchlist.filter(c => c !== coin);
+  localStorage.setItem('cnews_watch', JSON.stringify(watchlist));
+  renderWatchlist();
+  applyFilters();
+}
+
+// ── LOAD ALL ──
+async function loadAll(){
+  if(isLoading) return;
+  isLoading = true;
+  document.getElementById('btnRefresh').disabled = true;
+  document.getElementById('btnRefresh').textContent = '⏳';
+  hideErr();
+  showLoading();
+
+  const results = await Promise.allSettled(SOURCES.map(s => fetchRSS(s)));
+  let fresh = [];
+  results.forEach((r, i) => {
+    if(r.status === 'fulfilled' && r.value.length){
+      fresh = fresh.concat(r.value);
+    }
+  });
+
+  if(!fresh.length){
+    showErr('Nu s-au putut încărca știrile. Verifică conexiunea.');
+  } else {
+    // Mark new
+    fresh.forEach(n => {
+      n.isNew = !knownIds.has(n.id);
+      knownIds.add(n.id);
+    });
+    // Merge & deduplicate by id
+    const existingIds = new Set(allNews.map(n => n.id));
+    const newOnly = fresh.filter(n => !existingIds.has(n.id));
+    allNews = [...newOnly, ...allNews]
+      .sort((a,b) => new Date(b.published) - new Date(a.published))
+      .slice(0, 300);
+  }
+
+  updateStats();
+  applyFilters();
+  document.getElementById('lastUpd').textContent = 'Actualizat: ' + new Date().toLocaleTimeString('ro-RO');
+  document.getElementById('btnRefresh').disabled = false;
+  document.getElementById('btnRefresh').textContent = '↺ Refresh acum';
+  isLoading = false;
+}
+
+// ── FETCH RSS via rss2json ──
+async function fetchRSS(source){
+  try {
+    const url = RSS2JSON + encodeURIComponent(source.url) + '&count=20';
+    const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+    if(!res.ok) return [];
+    const data = await res.json();
+    if(data.status !== 'ok') return [];
+    return (data.items || []).map((item, i) => {
+      const title = item.title || '';
+      const coins = extractCoins(title + ' ' + (item.description || ''));
+      const sentiment = getSentiment(title);
+      const id = source.name + '_' + (item.guid || item.link || i);
+      return {
+        id,
+        title: stripHtml(title),
+        url: item.link || '#',
+        source: source.name,
+        sourceEmoji: source.emoji,
+        published: item.pubDate,
+        coins,
+        sentiment,
+        isNew: false
+      };
+    });
+  } catch(e) {
+    return [];
+  }
+}
+
+// ── SENTIMENT ──
+function getSentiment(title){
+  const t = (title || '').toLowerCase();
+  const delistWords = ['delist','removes trading','suspend trading','discontinu'];
+  const listWords   = ['lists','listing','adds trading','new trading pair','now available'];
+  const bullWords   = ['surge','pump','bull','moon','rally','gains','rises','hits','ath','record','launch','partnership','adoption','soars','jumps','climbs','breakout'];
+  const bearWords   = ['crash','dump','bear','falls','drops','plunges','hack','scam','ban','delist','liquidat','warning','risk','investigation','tumbles','sinks','loses'];
+  const impWords    = ['breaking','urgent','alert','major','critical','massive','historic'];
+
+  if(delistWords.some(w => t.includes(w))) return 'delisting';
+  if(listWords.some(w => t.includes(w)))   return 'listing';
+  if(impWords.some(w => t.includes(w)))    return 'important';
+  const bScore = bullWords.filter(w => t.includes(w)).length;
+  const dScore = bearWords.filter(w => t.includes(w)).length;
+  if(bScore > dScore) return 'bullish';
+  if(dScore > bScore) return 'bearish';
+  return 'neutral';
+}
+
+// ── EXTRACT COINS ──
+const COINS = ['BTC','ETH','BNB','SOL','XRP','ADA','DOGE','MATIC','DOT','AVAX',
+  'LINK','UNI','ATOM','LTC','BCH','ALGO','VET','FTM','NEAR','SAND','MANA','AXS',
+  'GALA','APE','OP','ARB','SUI','SEI','TIA','INJ','HYPE','WLD','PEPE','SHIB',
+  'FLOKI','TON','BONK','WIF','JUP','PYTH','STRK','BLUR','IMX','ENS','CRV',
+  'AAVE','COMP','MKR','SNX','YFI','SUSHI','1INCH','GRT','LDO','RPL'];
+
+function extractCoins(text){
+  const up = text.toUpperCase();
+  return COINS.filter(c => {
+    const re = new RegExp('\\b' + c + '\\b');
+    return re.test(up);
+  });
+}
+
+function stripHtml(str){
+  return str.replace(/<[^>]*>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'").trim();
+}
+
+// ── FILTERS & RENDER ──
+function setFilter(f, el, cls='act'){
+  currentFilter = f;
+  document.querySelectorAll('.ftag').forEach(t => {
+    t.classList.remove('act','act-red','act-yellow','act-blue','act-orange');
+  });
+  el.classList.add(cls);
+  applyFilters();
+}
+
+function applyFilters(){
+  const q = (document.getElementById('searchInp').value || '').toLowerCase().trim();
+  let filtered = [...allNews];
+
+  if(currentFilter === 'bullish')   filtered = filtered.filter(n => n.sentiment === 'bullish');
+  else if(currentFilter === 'bearish')  filtered = filtered.filter(n => n.sentiment === 'bearish');
+  else if(currentFilter === 'important') filtered = filtered.filter(n => n.sentiment === 'important');
+  else if(currentFilter === 'listing')  filtered = filtered.filter(n => n.sentiment === 'listing' || n.sentiment === 'delisting');
+  else if(currentFilter === 'watchlist') filtered = filtered.filter(n => n.coins.some(c => watchlist.includes(c)));
+
+  if(q){
+    filtered = filtered.filter(n =>
+      n.title.toLowerCase().includes(q) ||
+      n.coins.some(c => c.toLowerCase().includes(q)) ||
+      (n.source||'').toLowerCase().includes(q)
+    );
+  }
+
+  renderNews(filtered);
+  document.getElementById('feedCount').textContent = filtered.length + ' știri';
+}
+
+const SENT_MAP = {
+  bullish:   { cls:'na-bullish',  tag:'nt-bullish',  lbl:'BULLISH' },
+  bearish:   { cls:'na-bearish',  tag:'nt-bearish',  lbl:'BEARISH' },
+  important: { cls:'na-important',tag:'nt-important',lbl:'IMPORTANT' },
+  neutral:   { cls:'na-neutral',  tag:'nt-neutral',  lbl:'NEUTRU' },
+  listing:   { cls:'na-listing',  tag:'nt-listing',  lbl:'LISTARE' },
+  delisting: { cls:'na-delisting',tag:'nt-delisting',lbl:'DELISTARE' },
+};
+
+function renderNews(items){
+  const list = document.getElementById('newsList');
+  if(!items.length){
+    list.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-txt">Nicio știre găsită</div></div>`;
+    return;
+  }
+  list.innerHTML = items.map(n => {
+    const s = SENT_MAP[n.sentiment] || SENT_MAP.neutral;
+    const ago = timeAgo(n.published);
+    const coinPills = n.coins.slice(0,6).map(c => {
+      const inWl = watchlist.includes(c);
+      return `<span class="coin-pill${inWl?' wl':''}" onclick="filterByCoin('${c}')">${c}</span>`;
+    }).join('');
+    return `<div class="news-item${n.isNew?' new-item':''}">
+      <div class="news-accent ${s.cls}"></div>
+      <div class="news-body">
+        <div class="news-top">
+          <a class="news-title" href="${n.url}" target="_blank" rel="noopener">${n.title}</a>
+          <div class="news-time">${ago}</div>
+        </div>
+        <div class="news-meta">
+          <span class="news-source">${n.sourceEmoji} ${n.source}</span>
+          <span class="news-tag ${s.tag}">${s.lbl}</span>
+          ${coinPills}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function filterByCoin(coin){
+  document.getElementById('searchInp').value = coin;
+  applyFilters();
+}
+
+// ── STATS ──
+function updateStats(){
+  document.getElementById('st-total').textContent = allNews.length;
+  document.getElementById('st-bull').textContent  = allNews.filter(n=>n.sentiment==='bullish').length;
+  document.getElementById('st-bear').textContent  = allNews.filter(n=>n.sentiment==='bearish').length;
+  document.getElementById('st-imp').textContent   = allNews.filter(n=>n.sentiment==='important'||n.sentiment==='delisting'||n.sentiment==='listing').length;
+}
+
+// ── AUTO REFRESH ──
+function startAutoRefresh(){
+  clearInterval(cdTimer);
+  if(!document.getElementById('autoChk').checked){
+    document.getElementById('cdWrap').style.display='none';
+    return;
+  }
+  document.getElementById('cdWrap').style.display='flex';
+  const secs = parseInt(document.getElementById('autoInt').value) || 300;
+  cdSec = secs;
+  updateCd();
+  cdTimer = setInterval(()=>{
+    cdSec--;
+    updateCd();
+    if(cdSec <= 0){ cdSec = secs; loadAll(); }
+  }, 1000);
+}
+function updateCd(){
+  const m = Math.floor(cdSec/60), s = cdSec%60;
+  document.getElementById('cdVal').textContent = m>0 ? `${m}m ${s}s` : `${s}s`;
+}
+function toggleAuto(){ startAutoRefresh(); }
+function changeInterval(){ cdSec = parseInt(document.getElementById('autoInt').value)||300; startAutoRefresh(); }
+
+// ── UTILS ──
+function timeAgo(ts){
+  if(!ts) return '';
+  const d = new Date(ts);
+  if(isNaN(d)) return '';
+  const diff = Math.floor((Date.now() - d) / 1000);
+  if(diff < 60)    return diff + 's în urmă';
+  if(diff < 3600)  return Math.floor(diff/60) + 'm în urmă';
+  if(diff < 86400) return Math.floor(diff/3600) + 'h în urmă';
+  return Math.floor(diff/86400) + 'z în urmă';
+}
+function showErr(msg){
+  const el = document.getElementById('errBar');
+  el.textContent = msg; el.classList.add('show');
+}
+function hideErr(){ document.getElementById('errBar').classList.remove('show'); }
+function showLoading(){
+  if(!allNews.length)
+    document.getElementById('newsList').innerHTML = `<div class="loading"><div class="loading-spinner"></div><div class="loading-txt">Se încarcă știrile din ${SOURCES.length} surse...</div></div>`;
+}
+</script>
+</body>
+</html>
