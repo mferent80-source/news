@@ -1,326 +1,502 @@
 <!DOCTYPE html>
-<html lang="ro">
+<html lang="ro" data-theme="slate">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="theme-color" content="#060912">
+<meta name="theme-color" content="#0f1117">
 <title>Crypto News Live</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800;900&display=swap" rel="stylesheet">
 <style>
-@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;700&family=Barlow+Condensed:wght@400;600;700;800;900&display=swap');
 
-:root{
-  --bg:#060912;--bg2:#0c1122;--bg3:#111830;--bg4:#18213d;
-  --border:#1e2a45;--border2:#26345a;
-  --txt1:#e2e8f8;--txt2:#7a89ad;--txt3:#3a4566;
-  --green:#00e676;--greenl:rgba(0,230,118,.1);--greenb:rgba(0,230,118,.3);
-  --red:#ff4444;--redl:rgba(255,68,68,.1);
-  --yellow:#ffd740;--yellowl:rgba(255,215,64,.1);
-  --blue:#448aff;--bluel:rgba(68,138,255,.1);
-  --orange:#ff9100;--orangel:rgba(255,145,0,.1);
-  --purple:#e040fb;--purplel:rgba(224,64,251,.1);
-  --cyan:#18ffff;--cyanl:rgba(24,255,255,.08);
-  --mono:'IBM Plex Mono',monospace;
-  --head:'Barlow Condensed',sans-serif;
+/* ══════════════════════════════════════
+   TEME
+══════════════════════════════════════ */
+
+/* SLATE — dark modern (default) */
+[data-theme="slate"]{
+  --bg:      #0f1117;
+  --bg2:     #1a1d27;
+  --bg3:     #22263a;
+  --bg4:     #2a2f47;
+  --border:  #2e3350;
+  --border2: #3d4470;
+  --txt1:    #eef0f8;
+  --txt2:    #8890b4;
+  --txt3:    #4a5070;
+  --acc:     #6c63ff;
+  --accl:    rgba(108,99,255,.12);
+  --accb:    rgba(108,99,255,.35);
+  --green:   #22c55e;  --greenl:rgba(34,197,94,.12);  --greenb:rgba(34,197,94,.3);
+  --red:     #ef4444;  --redl:  rgba(239,68,68,.12);
+  --yellow:  #f59e0b;  --yellowl:rgba(245,158,11,.12);
+  --blue:    #3b82f6;  --bluel: rgba(59,130,246,.12);
+  --orange:  #f97316;  --orangel:rgba(249,115,22,.12);
+  --purple:  #a855f7;  --purplel:rgba(168,85,247,.12);
+  --cyan:    #06b6d4;  --cyanl: rgba(6,182,212,.1);
+  --card-shadow: 0 1px 3px rgba(0,0,0,.4);
+  --card-hover:  0 4px 20px rgba(0,0,0,.5);
+  --radius: 12px;
+  --radius-sm: 8px;
 }
 
+/* OCEAN — deep blue */
+[data-theme="ocean"]{
+  --bg:      #060d1a;
+  --bg2:     #0c1830;
+  --bg3:     #112044;
+  --bg4:     #172855;
+  --border:  #1e3060;
+  --border2: #283d78;
+  --txt1:    #e0ecff;
+  --txt2:    #6b8abf;
+  --txt3:    #344870;
+  --acc:     #38bdf8;
+  --accl:    rgba(56,189,248,.1);
+  --accb:    rgba(56,189,248,.3);
+  --green:   #34d399;  --greenl:rgba(52,211,153,.12);  --greenb:rgba(52,211,153,.3);
+  --red:     #f87171;  --redl:  rgba(248,113,113,.12);
+  --yellow:  #fbbf24;  --yellowl:rgba(251,191,36,.12);
+  --blue:    #60a5fa;  --bluel: rgba(96,165,250,.12);
+  --orange:  #fb923c;  --orangel:rgba(251,146,60,.12);
+  --purple:  #c084fc;  --purplel:rgba(192,132,252,.12);
+  --cyan:    #38bdf8;  --cyanl: rgba(56,189,248,.1);
+  --card-shadow: 0 1px 4px rgba(0,0,0,.5);
+  --card-hover:  0 4px 24px rgba(56,189,248,.08);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+/* LIGHT — clean white */
+[data-theme="light"]{
+  --bg:      #f5f7fa;
+  --bg2:     #ffffff;
+  --bg3:     #f0f2f8;
+  --bg4:     #e8ebf5;
+  --border:  #dde2f0;
+  --border2: #c8cfe8;
+  --txt1:    #111827;
+  --txt2:    #4b5563;
+  --txt3:    #9ca3af;
+  --acc:     #6366f1;
+  --accl:    rgba(99,102,241,.08);
+  --accb:    rgba(99,102,241,.25);
+  --green:   #16a34a;  --greenl:rgba(22,163,74,.08);   --greenb:rgba(22,163,74,.25);
+  --red:     #dc2626;  --redl:  rgba(220,38,38,.08);
+  --yellow:  #d97706;  --yellowl:rgba(217,119,6,.08);
+  --blue:    #2563eb;  --bluel: rgba(37,99,235,.08);
+  --orange:  #ea580c;  --orangel:rgba(234,88,12,.08);
+  --purple:  #9333ea;  --purplel:rgba(147,51,234,.08);
+  --cyan:    #0891b2;  --cyanl: rgba(8,145,178,.08);
+  --card-shadow: 0 1px 3px rgba(0,0,0,.08), 0 1px 2px rgba(0,0,0,.04);
+  --card-hover:  0 4px 16px rgba(0,0,0,.12);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+/* AMBER — warm dark */
+[data-theme="amber"]{
+  --bg:      #0f0e0b;
+  --bg2:     #1a1812;
+  --bg3:     #24211a;
+  --bg4:     #2e2a20;
+  --border:  #3a3525;
+  --border2: #4a4330;
+  --txt1:    #fdf6e3;
+  --txt2:    #a89870;
+  --txt3:    #5a5038;
+  --acc:     #f59e0b;
+  --accl:    rgba(245,158,11,.1);
+  --accb:    rgba(245,158,11,.3);
+  --green:   #84cc16;  --greenl:rgba(132,204,22,.12);  --greenb:rgba(132,204,22,.3);
+  --red:     #f87171;  --redl:  rgba(248,113,113,.12);
+  --yellow:  #f59e0b;  --yellowl:rgba(245,158,11,.12);
+  --blue:    #60a5fa;  --bluel: rgba(96,165,250,.12);
+  --orange:  #fb923c;  --orangel:rgba(251,146,60,.12);
+  --purple:  #e879f9;  --purplel:rgba(232,121,249,.12);
+  --cyan:    #22d3ee;  --cyanl: rgba(34,211,238,.1);
+  --card-shadow: 0 1px 4px rgba(0,0,0,.5);
+  --card-hover:  0 4px 20px rgba(245,158,11,.06);
+  --radius: 12px;
+  --radius-sm: 8px;
+}
+
+/* ══════════════════════════════════════
+   BASE
+══════════════════════════════════════ */
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{min-height:100vh;overflow-x:hidden}
-
 body{
-  font-family:var(--mono);
-  background:var(--bg);
-  color:var(--txt1);
+  font-family:'Inter',sans-serif;
+  background:var(--bg);color:var(--txt1);
   min-height:100vh;
+  transition:background .3s,color .3s;
 }
 
-/* Animated background */
-body::before{
-  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:
-    radial-gradient(ellipse 60% 40% at 20% 20%, rgba(0,230,118,.04) 0%, transparent 60%),
-    radial-gradient(ellipse 40% 60% at 80% 80%, rgba(68,138,255,.04) 0%, transparent 60%);
-}
+.app{max-width:860px;margin:0 auto;padding:14px 14px 100px;}
 
-/* Scanline effect */
-body::after{
-  content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
-  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);
-}
-
-.app{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:12px 12px 80px;}
-
-/* ── HEADER ── */
+/* ══════════════════════════════════════
+   HEADER
+══════════════════════════════════════ */
 .hdr{
   display:flex;align-items:center;justify-content:space-between;
-  padding:14px 0 12px;border-bottom:1px solid var(--border);
+  padding:12px 0 14px;border-bottom:1px solid var(--border);
   margin-bottom:16px;gap:10px;flex-wrap:wrap;
 }
 .brand{display:flex;align-items:center;gap:10px;}
 .brand-icon{
   width:38px;height:38px;border-radius:10px;
-  background:linear-gradient(135deg,var(--greenl),var(--bluel));
-  border:1px solid var(--greenb);
+  background:linear-gradient(135deg,var(--acc),var(--cyan));
   display:flex;align-items:center;justify-content:center;
-  font-size:18px;
+  font-size:18px;flex-shrink:0;
+  box-shadow:0 0 14px var(--accl);
 }
 .brand-name{
-  font-family:var(--head);font-weight:900;font-size:1.5rem;
-  letter-spacing:1px;text-transform:uppercase;
-  background:linear-gradient(135deg,var(--green),var(--cyan));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  font-family:'Outfit',sans-serif;font-weight:800;font-size:1.25rem;
+  letter-spacing:-.3px;color:var(--txt1);
 }
-.brand-sub{font-size:.58rem;color:var(--txt3);letter-spacing:2px;text-transform:uppercase;margin-top:1px;}
+.brand-sub{font-size:.6rem;color:var(--txt3);letter-spacing:.5px;margin-top:1px;}
+.hdr-right{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
 
-.hdr-right{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+/* Theme switcher */
+.theme-switcher{display:flex;gap:4px;background:var(--bg3);border-radius:8px;padding:3px;}
+.theme-btn{
+  width:22px;height:22px;border-radius:5px;border:none;cursor:pointer;
+  transition:all .15s;position:relative;
+}
+.theme-btn.active{transform:scale(1.15);box-shadow:0 0 0 2px var(--txt1);}
+.theme-btn[data-t="slate"]{background:linear-gradient(135deg,#1a1d27,#6c63ff);}
+.theme-btn[data-t="ocean"]{background:linear-gradient(135deg,#0c1830,#38bdf8);}
+.theme-btn[data-t="light"]{background:linear-gradient(135deg,#f5f7fa,#6366f1);}
+.theme-btn[data-t="amber"]{background:linear-gradient(135deg,#1a1812,#f59e0b);}
 
-.live-badge{
+.live-pill{
   display:flex;align-items:center;gap:5px;
   background:var(--greenl);border:1px solid var(--greenb);
   border-radius:20px;padding:4px 10px;
-  font-size:.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--green);
+  font-size:.6rem;font-weight:600;letter-spacing:1px;color:var(--green);
 }
-.live-dot{width:6px;height:6px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);animation:pulse 1.2s infinite;}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.live-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:blink 1.4s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 
-.last-upd{font-size:.58rem;color:var(--txt3);font-family:var(--mono);}
+.last-upd{font-size:.6rem;color:var(--txt3);}
 
-/* ── STATS ROW ── */
-.stats{display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap;}
+.notif-btn{
+  padding:5px 10px;border-radius:var(--radius-sm);font-size:.6rem;font-weight:600;
+  cursor:pointer;border:1px solid var(--border2);background:var(--bg3);
+  color:var(--txt2);transition:all .15s;
+}
+.notif-btn:hover{color:var(--txt1);}
+.notif-btn.granted{border-color:var(--greenb);background:var(--greenl);color:var(--green);}
+.notif-btn.denied{border-color:var(--redl);color:var(--red);}
+
+/* ══════════════════════════════════════
+   SENTIMENT BAR
+══════════════════════════════════════ */
+.sentiment-bar{
+  border-radius:var(--radius);padding:14px 18px;margin-bottom:14px;
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  border:1px solid var(--border);background:var(--bg2);
+  box-shadow:var(--card-shadow);transition:all .4s;
+}
+.sentiment-bar.bull{border-color:var(--greenb);background:linear-gradient(135deg,var(--bg2),rgba(34,197,94,.04));}
+.sentiment-bar.bear{border-color:rgba(239,68,68,.3);background:linear-gradient(135deg,var(--bg2),rgba(239,68,68,.04));}
+.sent-left{flex:1;}
+.sent-label{
+  font-family:'Outfit',sans-serif;font-weight:800;font-size:1.1rem;
+  letter-spacing:-.2px;
+}
+.sent-label.bull{color:var(--green);}
+.sent-label.bear{color:var(--red);}
+.sent-label.neut{color:var(--txt2);}
+.sent-sub{font-size:.6rem;color:var(--txt3);margin-top:3px;}
+.sent-bar-wrap{flex:1;max-width:180px;}
+.sent-track{height:5px;background:var(--bg4);border-radius:99px;overflow:hidden;margin-bottom:5px;}
+.sent-fill{height:100%;border-radius:99px;transition:width .7s cubic-bezier(.4,0,.2,1);}
+.sent-fill.bull{background:linear-gradient(90deg,var(--green),#4ade80);}
+.sent-fill.bear{background:linear-gradient(90deg,var(--red),#f87171);}
+.sent-nums{display:flex;justify-content:space-between;font-size:.58rem;font-weight:600;}
+.sent-pct-bull{color:var(--green);}
+.sent-pct-bear{color:var(--red);}
+.sent-icon{font-size:1.8rem;}
+
+/* ══════════════════════════════════════
+   STATS
+══════════════════════════════════════ */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
 .stat{
-  flex:1;min-width:100px;
-  background:var(--bg2);border:1px solid var(--border);border-radius:9px;
-  padding:8px 12px;position:relative;overflow:hidden;
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:10px 12px;box-shadow:var(--card-shadow);
+  position:relative;overflow:hidden;
 }
-.stat::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;}
-.stat.s-green::before{background:var(--green);}
-.stat.s-red::before{background:var(--red);}
-.stat.s-yellow::before{background:var(--yellow);}
-.stat.s-blue::before{background:var(--blue);}
-.stat-val{font-family:var(--head);font-weight:900;font-size:1.3rem;letter-spacing:.5px;}
-.stat-lbl{font-size:.55rem;color:var(--txt3);text-transform:uppercase;letter-spacing:1px;margin-top:1px;}
+.stat::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0;}
+.stat.s-green::after{background:var(--green);}
+.stat.s-red::after{background:var(--red);}
+.stat.s-yellow::after{background:var(--yellow);}
+.stat.s-blue::after{background:var(--blue);}
+.stat-val{font-family:'Outfit',sans-serif;font-weight:800;font-size:1.4rem;line-height:1;}
+.stat-lbl{font-size:.55rem;color:var(--txt3);text-transform:uppercase;letter-spacing:.8px;margin-top:4px;font-weight:500;}
 
-/* ── FILTERS ── */
-.filter-row{display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;align-items:center;}
-.filter-row input{
-  flex:1;min-width:140px;
-  background:var(--bg2);border:1px solid var(--border2);border-radius:7px;
-  padding:7px 11px;color:var(--txt1);font-family:var(--mono);font-size:.7rem;
-  outline:none;transition:border .15s;
+/* ══════════════════════════════════════
+   TRENDING
+══════════════════════════════════════ */
+.section-header{
+  font-size:.65rem;font-weight:700;color:var(--txt3);
+  text-transform:uppercase;letter-spacing:1.2px;
+  margin-bottom:8px;display:flex;align-items:center;gap:8px;
 }
-.filter-row input:focus{border-color:var(--green);}
-.filter-row input::placeholder{color:var(--txt3);}
+.section-header::after{content:'';flex:1;height:1px;background:var(--border);}
 
-.ftag{
-  padding:5px 11px;border-radius:20px;font-size:.6rem;font-weight:700;
-  letter-spacing:.8px;text-transform:uppercase;cursor:pointer;
-  border:1px solid var(--border);background:var(--bg2);color:var(--txt3);
-  transition:all .15s;white-space:nowrap;font-family:var(--mono);
+.trending-grid{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px;}
+.trend-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:10px 13px;min-width:85px;flex:1;max-width:130px;
+  cursor:pointer;transition:all .2s;box-shadow:var(--card-shadow);
+  position:relative;overflow:hidden;
 }
-.ftag.act{border-color:var(--green);background:var(--greenl);color:var(--green);}
-.ftag.act-red{border-color:var(--red);background:var(--redl);color:var(--red);}
-.ftag.act-yellow{border-color:var(--yellow);background:var(--yellowl);color:var(--yellow);}
-.ftag.act-blue{border-color:var(--blue);background:var(--bluel);color:var(--blue);}
-.ftag.act-orange{border-color:var(--orange);background:var(--orangel);color:var(--orange);}
-.ftag:hover{color:var(--txt1);border-color:var(--border2);}
-
-.btn-refresh{
-  padding:6px 14px;border-radius:7px;font-size:.6rem;font-weight:700;
-  letter-spacing:1px;text-transform:uppercase;cursor:pointer;
-  background:var(--green);color:#000;border:none;
-  font-family:var(--mono);transition:all .15s;white-space:nowrap;
+.trend-card::before{
+  content:'';position:absolute;top:0;left:0;width:3px;height:100%;
+  background:var(--acc);border-radius:0 2px 2px 0;
 }
-.btn-refresh:hover{opacity:.85;}
-.btn-refresh:active{transform:scale(.96);}
-.btn-refresh:disabled{opacity:.4;cursor:not-allowed;}
+.trend-card:hover{border-color:var(--acc);box-shadow:var(--card-hover);transform:translateY(-2px);}
+.trend-coin{font-family:'Outfit',sans-serif;font-weight:800;font-size:.95rem;color:var(--txt1);}
+.trend-count{font-size:.55rem;color:var(--txt3);margin-top:1px;}
+.trend-price{font-size:.65rem;font-weight:600;margin-top:6px;color:var(--txt2);}
+.trend-chg{font-size:.6rem;font-weight:700;}
+.trend-chg.up{color:var(--green);}
+.trend-chg.down{color:var(--red);}
 
-/* ── WATCHLIST ── */
+/* ══════════════════════════════════════
+   WATCHLIST
+══════════════════════════════════════ */
 .watchlist{
-  background:var(--bg2);border:1px solid var(--border);border-radius:10px;
-  padding:10px 12px;margin-bottom:12px;
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  padding:12px 14px;margin-bottom:12px;box-shadow:var(--card-shadow);
 }
-.wl-title{font-size:.58rem;color:var(--txt3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px;}
+.wl-title{font-size:.62rem;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:.8px;margin-bottom:9px;}
 .wl-tags{display:flex;gap:5px;flex-wrap:wrap;align-items:center;}
 .wl-tag{
   display:flex;align-items:center;gap:4px;
-  background:var(--bg3);border:1px solid var(--border2);border-radius:5px;
-  padding:3px 8px;font-size:.62rem;font-family:var(--mono);cursor:default;
+  background:var(--bg3);border:1px solid var(--border2);border-radius:6px;
+  padding:4px 9px;font-size:.65rem;font-weight:600;color:var(--txt2);
+  border-color:var(--accb);background:var(--accl);color:var(--acc);
 }
-.wl-tag.active{border-color:var(--cyan);color:var(--cyan);background:var(--cyanl);}
-.wl-tag .rm{cursor:pointer;color:var(--txt3);margin-left:3px;font-size:.7rem;}
+.wl-tag .rm{cursor:pointer;color:var(--txt3);margin-left:3px;font-size:.7rem;transition:color .1s;}
 .wl-tag .rm:hover{color:var(--red);}
 .wl-add{display:flex;gap:5px;}
 .wl-inp{
-  background:var(--bg3);border:1px solid var(--border);border-radius:5px;
-  padding:4px 8px;font-family:var(--mono);font-size:.65rem;color:var(--txt1);
-  outline:none;width:80px;text-transform:uppercase;
+  background:var(--bg3);border:1px solid var(--border);border-radius:6px;
+  padding:5px 9px;font-size:.65rem;color:var(--txt1);
+  outline:none;width:75px;text-transform:uppercase;font-family:'Inter',sans-serif;
+  transition:border .15s;
 }
-.wl-inp:focus{border-color:var(--cyan);}
+.wl-inp:focus{border-color:var(--acc);}
+.wl-inp::placeholder{color:var(--txt3);}
 .wl-btn{
-  background:transparent;border:1px solid var(--cyan);color:var(--cyan);
-  border-radius:5px;padding:3px 10px;font-family:var(--mono);font-size:.6rem;cursor:pointer;
+  background:var(--accl);border:1px solid var(--accb);color:var(--acc);
+  border-radius:6px;padding:5px 11px;font-size:.65rem;font-weight:600;cursor:pointer;
   transition:all .15s;
 }
-.wl-btn:hover{background:var(--cyanl);}
+.wl-btn:hover{background:var(--acc);color:#fff;}
 
-/* ── NEWS FEED ── */
-.feed-hdr{
-  display:flex;align-items:center;justify-content:space-between;
-  margin-bottom:10px;
+/* ══════════════════════════════════════
+   AUTO REFRESH
+══════════════════════════════════════ */
+.auto-row{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:9px 14px;margin-bottom:12px;font-size:.65rem;color:var(--txt3);
+  box-shadow:var(--card-shadow);
 }
-.feed-title{
-  font-family:var(--head);font-weight:800;font-size:1rem;
-  letter-spacing:1px;text-transform:uppercase;color:var(--txt2);
+.auto-row label{display:flex;align-items:center;gap:7px;cursor:pointer;color:var(--txt2);}
+.tog{position:relative;width:30px;height:17px;}
+.tog input{display:none;}
+.tog-sl{position:absolute;inset:0;background:var(--bg4);border:1px solid var(--border2);border-radius:99px;transition:.25s;}
+.tog-sl::before{content:'';position:absolute;left:2px;top:50%;transform:translateY(-50%);width:11px;height:11px;border-radius:50%;background:var(--txt3);transition:.25s;}
+.tog input:checked+.tog-sl{background:var(--accl);border-color:var(--accb);}
+.tog input:checked+.tog-sl::before{background:var(--acc);left:15px;}
+select.auto-sel{
+  background:var(--bg3);border:1px solid var(--border);border-radius:6px;
+  padding:3px 7px;color:var(--txt2);font-size:.62rem;outline:none;font-family:'Inter',sans-serif;
 }
-.feed-count{font-size:.6rem;color:var(--txt3);}
+.cd-val-wrap{color:var(--txt2);}
+.cd-val-wrap span{color:var(--acc);font-weight:700;}
+.btn-refresh{
+  padding:6px 14px;border-radius:6px;font-size:.62rem;font-weight:700;
+  cursor:pointer;background:var(--acc);color:#fff;border:none;
+  transition:all .15s;margin-left:auto;
+}
+.btn-refresh:hover{opacity:.85;}
+.btn-refresh:active{transform:scale(.97);}
+.btn-refresh:disabled{opacity:.4;cursor:not-allowed;}
 
-.news-item{
-  background:var(--bg2);border:1px solid var(--border);border-radius:10px;
-  margin-bottom:8px;overflow:hidden;
-  transition:border-color .2s,transform .15s;
-  animation:slideIn .3s ease;
-  position:relative;
+/* ══════════════════════════════════════
+   FILTERS
+══════════════════════════════════════ */
+.filter-row{display:flex;gap:5px;margin-bottom:8px;flex-wrap:wrap;align-items:center;}
+.search-wrap{
+  flex:1;min-width:160px;
+  display:flex;align-items:center;gap:8px;
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);
+  padding:7px 11px;transition:border .15s;
 }
-@keyframes slideIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-.news-item:hover{border-color:var(--border2);transform:translateX(2px);}
-.news-item.new-item{border-color:var(--green);animation:newPop .4s ease;}
-@keyframes newPop{0%{border-color:var(--green);box-shadow:0 0 20px var(--greenl)}100%{box-shadow:none}}
+.search-wrap:focus-within{border-color:var(--acc);}
+.search-wrap svg{width:13px;height:13px;stroke:var(--txt3);flex-shrink:0;}
+.search-wrap input{
+  background:none;border:none;outline:none;color:var(--txt1);
+  font-size:.7rem;width:100%;font-family:'Inter',sans-serif;
+}
+.search-wrap input::placeholder{color:var(--txt3);}
 
-.news-accent{position:absolute;top:0;left:0;width:3px;height:100%;}
-.na-bullish{background:var(--green);}
-.na-bearish{background:var(--red);}
-.na-important{background:var(--yellow);}
-.na-neutral{background:var(--blue);}
-.na-listing{background:var(--cyan);}
-.na-delisting{background:var(--orange);}
+.ftag{
+  padding:5px 12px;border-radius:20px;font-size:.62rem;font-weight:600;
+  cursor:pointer;border:1px solid var(--border);background:var(--bg2);
+  color:var(--txt3);transition:all .15s;white-space:nowrap;
+}
+.ftag:hover{color:var(--txt2);border-color:var(--border2);}
+.ftag.act{border-color:var(--accb);background:var(--accl);color:var(--acc);}
+.ftag.act-green{border-color:var(--greenb);background:var(--greenl);color:var(--green);}
+.ftag.act-red{border-color:rgba(239,68,68,.3);background:var(--redl);color:var(--red);}
+.ftag.act-yellow{border-color:rgba(245,158,11,.3);background:var(--yellowl);color:var(--yellow);}
+.ftag.act-purple{border-color:rgba(168,85,247,.3);background:var(--purplel);color:var(--purple);}
 
-.news-body{padding:10px 12px 10px 16px;}
-.news-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;}
-.news-title{
-  font-family:var(--head);font-weight:700;font-size:.9rem;
-  color:var(--txt1);flex:1;line-height:1.3;
-  text-decoration:none;
+.time-filter{display:flex;gap:4px;margin-bottom:12px;}
+.tfbtn{
+  padding:4px 12px;border-radius:20px;font-size:.6rem;font-weight:600;
+  cursor:pointer;border:1px solid var(--border);background:var(--bg2);
+  color:var(--txt3);transition:all .15s;
 }
-.news-title:hover{color:var(--green);}
-.news-time{font-size:.58rem;color:var(--txt3);white-space:nowrap;flex-shrink:0;margin-top:2px;}
+.tfbtn.act{border-color:var(--border2);background:var(--bg3);color:var(--txt1);}
 
-.news-meta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;}
-.news-source{
-  font-size:.58rem;color:var(--txt3);
-  background:var(--bg3);border:1px solid var(--border);
-  padding:2px 6px;border-radius:4px;
-}
-.news-tag{
-  font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;
-  padding:2px 6px;border-radius:4px;
-}
-.nt-bullish{background:var(--greenl);color:var(--green);border:1px solid rgba(0,230,118,.2);}
-.nt-bearish{background:var(--redl);color:var(--red);border:1px solid rgba(255,68,68,.2);}
-.nt-important{background:var(--yellowl);color:var(--yellow);border:1px solid rgba(255,215,64,.2);}
-.nt-neutral{background:var(--bluel);color:var(--blue);border:1px solid rgba(68,138,255,.2);}
-.nt-listing{background:var(--cyanl);color:var(--cyan);border:1px solid rgba(24,255,255,.2);}
-.nt-delisting{background:var(--orangel);color:var(--orange);border:1px solid rgba(255,145,0,.2);}
-
-.coin-pills{display:flex;gap:4px;flex-wrap:wrap;}
-.coin-pill{
-  font-size:.55rem;font-weight:700;
-  background:var(--bg4);border:1px solid var(--border2);
-  padding:2px 6px;border-radius:4px;color:var(--txt2);
-  cursor:pointer;transition:all .15s;
-}
-.coin-pill:hover{border-color:var(--cyan);color:var(--cyan);}
-.coin-pill.wl{border-color:rgba(24,255,255,.4);color:var(--cyan);background:var(--cyanl);}
-
-.news-votes{
-  display:flex;align-items:center;gap:10px;margin-top:6px;
-  font-size:.58rem;color:var(--txt3);
-}
-.vote{display:flex;align-items:center;gap:3px;}
-.vote-up{color:var(--green);}
-.vote-down{color:var(--red);}
-
-/* ── BINANCE ANNOUNCEMENTS ── */
-.ann-section{margin-bottom:16px;}
-.ann-title{
-  font-family:var(--head);font-weight:800;font-size:.95rem;
-  letter-spacing:1.5px;text-transform:uppercase;color:var(--yellow);
-  margin-bottom:8px;display:flex;align-items:center;gap:8px;
-}
-.ann-title::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,var(--yellowl),transparent);}
-
-.ann-item{
-  background:var(--bg2);border:1px solid rgba(255,215,64,.15);border-radius:9px;
-  padding:10px 14px;margin-bottom:6px;display:flex;align-items:flex-start;gap:10px;
-  transition:all .2s;
-}
-.ann-item:hover{border-color:rgba(255,215,64,.35);transform:translateX(2px);}
-.ann-icon{font-size:1rem;flex-shrink:0;margin-top:1px;}
-.ann-body{}
-.ann-item-title{
-  font-family:var(--head);font-weight:700;font-size:.85rem;color:var(--txt1);
-  line-height:1.3;text-decoration:none;display:block;
-}
-.ann-item-title:hover{color:var(--yellow);}
-.ann-item-time{font-size:.58rem;color:var(--txt3);margin-top:3px;}
-.ann-badge{
-  display:inline-block;font-size:.52rem;font-weight:700;text-transform:uppercase;
-  letter-spacing:.5px;padding:2px 6px;border-radius:4px;margin-right:5px;
-}
-.ab-new{background:var(--greenl);color:var(--green);border:1px solid rgba(0,230,118,.2);}
-.ab-delist{background:var(--orangel);color:var(--orange);border:1px solid rgba(255,145,0,.2);}
-.ab-list{background:var(--cyanl);color:var(--cyan);border:1px solid rgba(24,255,255,.2);}
-.ab-maint{background:var(--yellowl);color:var(--yellow);border:1px solid rgba(255,215,64,.2);}
-
-/* ── EMPTY / LOADING ── */
-.loading{
-  text-align:center;padding:48px 20px;color:var(--txt3);
-}
-.loading-spinner{
-  width:32px;height:32px;border:2px solid var(--border);border-top-color:var(--green);
-  border-radius:50%;animation:spin .8s linear infinite;margin:0 auto 12px;
-}
-@keyframes spin{to{transform:rotate(360deg)}}
-.loading-txt{font-size:.7rem;letter-spacing:1px;}
-
-.empty{text-align:center;padding:40px 20px;color:var(--txt3);}
-.empty-icon{font-size:2rem;margin-bottom:8px;opacity:.3;}
-.empty-txt{font-size:.7rem;}
-
-/* ── ERROR BAR ── */
+/* ══════════════════════════════════════
+   ERROR
+══════════════════════════════════════ */
 .err-bar{
-  background:var(--redl);border:1px solid rgba(255,68,68,.3);border-radius:8px;
-  padding:8px 12px;margin-bottom:10px;font-size:.65rem;color:var(--red);display:none;
+  background:var(--redl);border:1px solid rgba(239,68,68,.25);border-radius:var(--radius-sm);
+  padding:9px 13px;margin-bottom:10px;font-size:.65rem;color:var(--red);display:none;
 }
 .err-bar.show{display:block;}
 
-/* ── AUTO REFRESH ── */
-.auto-row{
-  display:flex;align-items:center;gap:8px;
-  background:var(--bg2);border:1px solid var(--border);border-radius:8px;
-  padding:7px 12px;margin-bottom:12px;font-size:.62rem;color:var(--txt3);
-  flex-wrap:wrap;gap:10px;
+/* ══════════════════════════════════════
+   FEED HEADER
+══════════════════════════════════════ */
+.feed-hdr{
+  display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;
 }
-.auto-row label{display:flex;align-items:center;gap:6px;cursor:pointer;}
-.tog{position:relative;width:28px;height:16px;cursor:pointer;}
-.tog input{display:none;}
-.tog-sl{position:absolute;inset:0;background:var(--bg3);border:1px solid var(--border);border-radius:20px;transition:.2s;}
-.tog-sl::before{content:'';position:absolute;left:2px;top:50%;transform:translateY(-50%);width:10px;height:10px;border-radius:50%;background:var(--txt3);transition:.2s;}
-.tog input:checked+.tog-sl{background:rgba(0,230,118,.15);border-color:var(--green);}
-.tog input:checked+.tog-sl::before{background:var(--green);left:14px;}
-.cd-auto{color:var(--green);font-weight:700;min-width:28px;}
-select.auto-sel{
-  background:var(--bg3);border:1px solid var(--border);border-radius:5px;
-  padding:3px 6px;color:var(--txt2);font-family:var(--mono);font-size:.6rem;outline:none;
+.feed-title{
+  font-family:'Outfit',sans-serif;font-weight:700;font-size:.9rem;
+  color:var(--txt2);text-transform:uppercase;letter-spacing:.5px;
 }
+.feed-count{font-size:.62rem;color:var(--txt3);}
 
-/* ── FOOTER ── */
-.footer{text-align:center;font-size:.55rem;color:var(--txt3);opacity:.4;padding-top:8px;}
+/* ══════════════════════════════════════
+   NEWS CARDS
+══════════════════════════════════════ */
+.news-item{
+  background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius);
+  margin-bottom:8px;overflow:hidden;
+  transition:border-color .2s,box-shadow .2s,transform .15s;
+  box-shadow:var(--card-shadow);
+  animation:fadeUp .25s ease;
+  position:relative;
+}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.news-item:hover{border-color:var(--border2);box-shadow:var(--card-hover);}
+.news-item.new-item{border-color:var(--green);}
 
-@media(max-width:500px){
+/* Accent stripe */
+.news-accent{position:absolute;top:0;left:0;width:3px;height:100%;border-radius:2px;}
+.na-bullish{background:var(--green);}
+.na-bearish{background:var(--red);}
+.na-important{background:var(--yellow);}
+.na-neutral{background:var(--border2);}
+.na-listing{background:var(--cyan);}
+.na-delisting{background:var(--orange);}
+
+.news-body{padding:12px 14px 12px 18px;}
+.news-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;margin-bottom:8px;}
+.news-title{
+  font-size:.88rem;font-weight:600;color:var(--txt1);
+  flex:1;line-height:1.45;text-decoration:none;
+  transition:color .15s;
+}
+.news-title:hover{color:var(--acc);}
+.news-time{font-size:.58rem;color:var(--txt3);white-space:nowrap;flex-shrink:0;margin-top:3px;font-weight:500;}
+
+.news-meta{display:flex;align-items:center;gap:5px;flex-wrap:wrap;margin-bottom:8px;}
+.news-source{
+  font-size:.58rem;color:var(--txt3);font-weight:500;
+  background:var(--bg3);border:1px solid var(--border);
+  padding:2px 7px;border-radius:4px;
+}
+.news-tag{
+  font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.4px;
+  padding:2px 7px;border-radius:4px;
+}
+.nt-bullish{background:var(--greenl);color:var(--green);border:1px solid var(--greenb);}
+.nt-bearish{background:var(--redl);color:var(--red);border:1px solid rgba(239,68,68,.2);}
+.nt-important{background:var(--yellowl);color:var(--yellow);border:1px solid rgba(245,158,11,.2);}
+.nt-neutral{background:var(--bg3);color:var(--txt3);border:1px solid var(--border);}
+.nt-listing{background:var(--cyanl);color:var(--cyan);border:1px solid rgba(6,182,212,.2);}
+.nt-delisting{background:var(--orangel);color:var(--orange);border:1px solid rgba(249,115,22,.2);}
+
+.coin-pill{
+  font-size:.58rem;font-weight:600;
+  background:var(--bg3);border:1px solid var(--border);
+  padding:2px 7px;border-radius:4px;color:var(--txt2);
+  cursor:pointer;transition:all .15s;
+}
+.coin-pill:hover{border-color:var(--accb);color:var(--acc);}
+.coin-pill.wl{border-color:var(--accb);color:var(--acc);background:var(--accl);}
+
+.coin-price{
+  font-size:.55rem;font-weight:700;padding:1px 4px;border-radius:3px;margin-left:2px;
+}
+.cp-up{color:var(--green);background:var(--greenl);}
+.cp-down{color:var(--red);background:var(--redl);}
+.cp-neu{color:var(--txt3);}
+
+.news-actions{display:flex;gap:5px;flex-wrap:wrap;}
+.btn-action{
+  padding:4px 10px;border-radius:6px;font-size:.58rem;font-weight:600;
+  border:1px solid var(--border);background:var(--bg3);color:var(--txt3);
+  cursor:pointer;transition:all .15s;
+}
+.btn-action:hover{border-color:var(--border2);color:var(--txt2);}
+.btn-bookmark.saved{border-color:rgba(245,158,11,.3);color:var(--yellow);background:var(--yellowl);}
+.btn-share:hover{border-color:var(--greenb);color:var(--green);}
+.btn-tg:hover{border-color:var(--accb);color:var(--acc);}
+
+/* ══════════════════════════════════════
+   LOADING / EMPTY
+══════════════════════════════════════ */
+.loading{text-align:center;padding:52px 20px;color:var(--txt3);}
+.spinner{
+  width:30px;height:30px;border:2px solid var(--border);border-top-color:var(--acc);
+  border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loading-txt{font-size:.7rem;font-weight:500;}
+.empty{text-align:center;padding:44px 20px;color:var(--txt3);}
+.empty-icon{font-size:2rem;margin-bottom:8px;opacity:.3;}
+.empty-txt{font-size:.7rem;}
+
+.footer{text-align:center;font-size:.58rem;color:var(--txt3);padding-top:10px;opacity:.5;}
+
+/* ══════════════════════════════════════
+   RESPONSIVE
+══════════════════════════════════════ */
+@media(max-width:560px){
   .stats{grid-template-columns:repeat(2,1fr);}
-  .hdr{gap:8px;}
-  .brand-name{font-size:1.2rem;}
+  .brand-name{font-size:1.1rem;}
+  .trending-grid .trend-card{min-width:72px;}
+  .hdr-right{gap:5px;}
+}
+@media(max-width:400px){
+  .stats{grid-template-columns:repeat(2,1fr);}
+  .sent-bar-wrap{display:none;}
 }
 </style>
 </head>
@@ -333,26 +509,58 @@ select.auto-sel{
     <div class="brand-icon">📡</div>
     <div>
       <div class="brand-name">Crypto News Live</div>
-      <div class="brand-sub">CryptoPanic · Binance · Știri în timp real</div>
+      <div class="brand-sub">CoinDesk · CoinTelegraph · Decrypt · Bitcoin.com</div>
     </div>
   </div>
   <div class="hdr-right">
-    <div class="live-badge"><div class="live-dot"></div>LIVE</div>
+    <!-- Theme switcher -->
+    <div class="theme-switcher">
+      <button class="theme-btn active" data-t="slate" onclick="setTheme('slate',this)" title="Slate Dark"></button>
+      <button class="theme-btn" data-t="ocean" onclick="setTheme('ocean',this)" title="Ocean Blue"></button>
+      <button class="theme-btn" data-t="light" onclick="setTheme('light',this)" title="Light"></button>
+      <button class="theme-btn" data-t="amber" onclick="setTheme('amber',this)" title="Amber"></button>
+    </div>
+    <div class="notif-btn" id="notifBtn" onclick="requestNotif()">🔔 Alerte</div>
+    <div class="live-pill"><div class="live-dot"></div>LIVE</div>
     <div class="last-upd" id="lastUpd">—</div>
   </div>
 </div>
 
+<!-- SENTIMENT GLOBAL -->
+<div class="sentiment-bar neut" id="sentBar">
+  <div class="sent-left">
+    <div class="sent-label neut" id="sentLabel">SE ÎNCARCĂ...</div>
+    <div class="sent-sub" id="sentSub">Calculez sentimentul pieței</div>
+  </div>
+  <div class="sent-bar-wrap">
+    <div class="sent-track">
+      <div class="sent-fill bull" id="sentFill" style="width:50%"></div>
+    </div>
+    <div class="sent-nums">
+      <span class="sent-pct-bull" id="sentBullPct">-</span>
+      <span class="sent-pct-bear" id="sentBearPct">-</span>
+    </div>
+  </div>
+  <div class="sent-icon" id="sentIcon">📊</div>
+</div>
+
 <!-- STATS -->
 <div class="stats">
-  <div class="stat s-green"><div class="stat-val" id="st-total" style="color:var(--green)">0</div><div class="stat-lbl">Știri totale</div></div>
+  <div class="stat s-green"><div class="stat-val" id="st-total" style="color:var(--acc)">0</div><div class="stat-lbl">Total</div></div>
   <div class="stat s-green"><div class="stat-val" id="st-bull" style="color:var(--green)">0</div><div class="stat-lbl">Bullish</div></div>
   <div class="stat s-red"><div class="stat-val" id="st-bear" style="color:var(--red)">0</div><div class="stat-lbl">Bearish</div></div>
   <div class="stat s-yellow"><div class="stat-val" id="st-imp" style="color:var(--yellow)">0</div><div class="stat-lbl">Importante</div></div>
 </div>
 
+<!-- TRENDING -->
+<div class="section-header">🔥 Trending coinuri</div>
+<div class="trending-grid" id="trendingGrid">
+  <div style="color:var(--txt3);font-size:.62rem;padding:6px">Se calculează...</div>
+</div>
+
 <!-- WATCHLIST -->
 <div class="watchlist">
-  <div class="wl-title">👁 Watchlist coinuri — știri filtrate automat</div>
+  <div class="wl-title">👁 Watchlist — filtrare automată știri</div>
   <div class="wl-tags" id="wlTags">
     <div class="wl-add">
       <input class="wl-inp" id="wlInp" placeholder="BTC" maxlength="12"
@@ -375,56 +583,52 @@ select.auto-sel{
     <option value="300" selected>5 min</option>
     <option value="600">10 min</option>
   </select>
-  <span id="cdWrap" style="display:flex;align-items:center;gap:4px">
-    Următor refresh: <span class="cd-auto" id="cdVal">--</span>
-  </span>
-  <button class="btn-refresh" id="btnRefresh" onclick="loadAll()">↺ Refresh acum</button>
+  <span class="cd-val-wrap" id="cdWrap">Refresh în: <span id="cdVal">--</span></span>
+  <button class="btn-refresh" id="btnRefresh" onclick="loadAll()">↺ Refresh</button>
 </div>
 
 <!-- FILTERS -->
 <div class="filter-row">
-  <input type="text" id="searchInp" placeholder="🔍 Caută știre sau coin..." oninput="applyFilters()">
-  <div class="ftag act" id="ft-all" onclick="setFilter('all',this)">Toate</div>
-  <div class="ftag" id="ft-bullish" onclick="setFilter('bullish',this,'act')">🟢 Bullish</div>
-  <div class="ftag" id="ft-bearish" onclick="setFilter('bearish',this,'act-red')">🔴 Bearish</div>
-  <div class="ftag" id="ft-important" onclick="setFilter('important',this,'act-yellow')">⚡ Importante</div>
-  <div class="ftag" id="ft-listing" onclick="setFilter('listing',this,'act-blue')">📋 Listări</div>
-  <div class="ftag" id="ft-watchlist" onclick="setFilter('watchlist',this,'act-blue')">👁 Watchlist</div>
+  <div class="search-wrap">
+    <svg viewBox="0 0 24 24" fill="none" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+    <input id="searchInp" placeholder="Caută știre sau coin..." oninput="applyFilters()">
+  </div>
+  <div class="ftag act" onclick="setFilter('all',this)">Toate</div>
+  <div class="ftag" onclick="setFilter('bullish',this,'act-green')">🟢 Bull</div>
+  <div class="ftag" onclick="setFilter('bearish',this,'act-red')">🔴 Bear</div>
+  <div class="ftag" onclick="setFilter('important',this,'act-yellow')">⚡ Alert</div>
+  <div class="ftag" onclick="setFilter('listing',this,'act')">📋 Listări</div>
+  <div class="ftag" onclick="setFilter('watchlist',this,'act')">👁 Watch</div>
+  <div class="ftag" onclick="setFilter('saved',this,'act-purple')">🔖 Salvate</div>
+</div>
+
+<!-- TIME FILTER -->
+<div class="time-filter">
+  <div class="tfbtn act" onclick="setTimeFilter(0,this)">Toate</div>
+  <div class="tfbtn" onclick="setTimeFilter(1,this)">1h</div>
+  <div class="tfbtn" onclick="setTimeFilter(6,this)">6h</div>
+  <div class="tfbtn" onclick="setTimeFilter(24,this)">24h</div>
 </div>
 
 <!-- ERROR -->
 <div class="err-bar" id="errBar"></div>
 
-<!-- BINANCE ANNOUNCEMENTS -->
-<div class="ann-section" id="annSection" style="display:none">
-  <div class="ann-title">📢 Anunțuri Binance</div>
-  <div id="annList"></div>
-</div>
-
-<!-- NEWS FEED -->
+<!-- FEED -->
 <div class="feed-hdr">
-  <div class="feed-title">📰 Feed știri crypto</div>
+  <div class="feed-title">📰 Feed știri</div>
   <div class="feed-count" id="feedCount"></div>
 </div>
 <div id="newsList"></div>
 
-<div class="footer">Date: CryptoPanic API · Binance Announcements · Refresh automat</div>
+<div class="footer">CoinDesk · CoinTelegraph · CryptoSlate · Decrypt · Bitcoin.com</div>
 </div>
 
 <script>
-// ── APIs care funcționează cu CORS de pe GitHub Pages ──
-// 1. GNews API - gratuit, 100 req/zi, CORS ok
-// 2. TheNewsAPI - gratuit, CORS ok  
-// 3. MediaStack - gratuit, CORS ok
-// 4. RSS via corsproxy.io (mai fiabil decât rss2json)
-
-const GNEWS_KEY = 'pub_demo'; // demo key - funcționează fără înregistrare pentru test
 const CORS_PROXIES = [
   'https://corsproxy.io/?',
   'https://api.codetabs.com/v1/proxy?quest=',
   'https://api.allorigins.win/raw?url=',
 ];
-
 const RSS_SOURCES = [
   { name:'CoinDesk',      url:'https://www.coindesk.com/arc/outboundfeeds/rss/', emoji:'📰' },
   { name:'CoinTelegraph', url:'https://cointelegraph.com/rss',                  emoji:'📡' },
@@ -432,18 +636,49 @@ const RSS_SOURCES = [
   { name:'Decrypt',       url:'https://decrypt.co/feed',                        emoji:'🔓' },
   { name:'Bitcoin.com',   url:'https://news.bitcoin.com/feed/',                 emoji:'₿'  },
 ];
+const BINANCE_TICKER = 'https://api.binance.com/api/v3/ticker/24hr';
 
 let allNews = [];
 let watchlist = JSON.parse(localStorage.getItem('cnews_watch')) || ['BTC','ETH','SOL','BNB','HYPE'];
+let savedIds = new Set(JSON.parse(localStorage.getItem('cnews_saved')) || []);
 let currentFilter = 'all';
+let currentTimeFilter = 0; // hours, 0=all
 let cdTimer = null;
 let cdSec = 300;
 let isLoading = false;
 let knownIds = new Set();
+let priceCache = {}; // coin -> {price, chg}
 
 renderWatchlist();
 loadAll();
 startAutoRefresh();
+updateNotifBtn();
+
+// ── NOTIFICATIONS ──
+function updateNotifBtn(){
+  const b = document.getElementById('notifBtn');
+  if(!('Notification' in window)){ b.textContent='🔕 N/A'; b.className='notif-btn denied'; return; }
+  if(Notification.permission==='granted'){ b.textContent='🔔 Alerte ON'; b.className='notif-btn granted'; }
+  else if(Notification.permission==='denied'){ b.textContent='🚫 Blocat'; b.className='notif-btn denied'; }
+  else { b.textContent='🔔 Alerte'; b.className='notif-btn'; }
+}
+async function requestNotif(){
+  if(!('Notification' in window)||Notification.permission!=='default') return;
+  await Notification.requestPermission();
+  updateNotifBtn();
+}
+function sendNotif(title, body){
+  if(Notification.permission==='granted'){
+    try{ new Notification('📡 '+title, {body, icon:'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" rx="20" fill="%23060912"/><text y="70" x="50" text-anchor="middle" font-size="60">📡</text></svg>'}); }catch(e){}
+  }
+}
+function checkImportantNotifs(freshItems){
+  const imp = freshItems.filter(n => n.isNew && ['important','delisting','listing'].includes(n.sentiment));
+  if(imp.length === 0) return;
+  const first = imp[0];
+  const label = {important:'⚡ IMPORTANT',delisting:'⚠️ DELISTARE',listing:'✨ LISTARE NOUĂ'}[first.sentiment];
+  sendNotif(label, first.title);
+}
 
 // ── WATCHLIST ──
 function renderWatchlist(){
@@ -483,32 +718,35 @@ async function loadAll(){
   hideErr();
   showLoading();
 
+  // Fetch news + prices in parallel
+  const [newsResults, prices] = await Promise.all([
+    Promise.allSettled(RSS_SOURCES.map(s => fetchRSSWithFallback(s))),
+    fetchPrices()
+  ]);
+
+  if(prices) priceCache = prices;
+
   let fresh = [];
+  newsResults.forEach(r => { if(r.status==='fulfilled') fresh = fresh.concat(r.value); });
 
-  // Încearcă fiecare sursă RSS cu fiecare proxy până găsim unul care merge
-  for(const source of RSS_SOURCES){
-    const items = await fetchRSSWithFallback(source);
-    fresh = fresh.concat(items);
-  }
+  if(!fresh.length) fresh = await fetchGNews();
 
   if(!fresh.length){
-    // Fallback final: GNews API direct (nu necesită proxy)
-    fresh = await fetchGNews();
-  }
-
-  if(!fresh.length){
-    showErr('Nu s-au putut încărca știrile. Încearcă din nou.');
+    showErr('Nu s-au putut încărca știrile. Încearcă din nou în câteva secunde.');
   } else {
     hideErr();
     fresh.forEach(n => { n.isNew = !knownIds.has(n.id); knownIds.add(n.id); });
+    checkImportantNotifs(fresh);
     const existingIds = new Set(allNews.map(n => n.id));
     const newOnly = fresh.filter(n => !existingIds.has(n.id));
     allNews = [...newOnly, ...allNews]
       .sort((a,b) => new Date(b.published) - new Date(a.published))
-      .slice(0, 300);
+      .slice(0, 400);
   }
 
   updateStats();
+  updateSentiment();
+  updateTrending();
   applyFilters();
   document.getElementById('lastUpd').textContent = 'Actualizat: ' + new Date().toLocaleTimeString('ro-RO');
   document.getElementById('btnRefresh').disabled = false;
@@ -516,7 +754,30 @@ async function loadAll(){
   isLoading = false;
 }
 
-// ── RSS cu fallback prin mai multe proxy-uri ──
+// ── FETCH PRICES from Binance ──
+async function fetchPrices(){
+  try{
+    const coins = [...new Set([...watchlist, ...COINS.slice(0,20)])];
+    const symbols = coins.map(c => c+'USDT');
+    // Fetch all tickers at once
+    const res = await fetch(BINANCE_TICKER, { signal: AbortSignal.timeout(5000) });
+    if(!res.ok) return null;
+    const data = await res.json();
+    const map = {};
+    data.forEach(t => {
+      const coin = t.symbol.replace('USDT','');
+      if(COINS.includes(coin) || watchlist.includes(coin)){
+        map[coin] = {
+          price: parseFloat(t.lastPrice),
+          chg: parseFloat(t.priceChangePercent)
+        };
+      }
+    });
+    return map;
+  }catch(e){ return null; }
+}
+
+// ── RSS FETCH ──
 async function fetchRSSWithFallback(source){
   for(const proxy of CORS_PROXIES){
     try{
@@ -530,115 +791,184 @@ async function fetchRSSWithFallback(source){
   }
   return [];
 }
-
-// ── Parse RSS XML ──
 function parseRSSXML(xml, source){
   try{
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(xml, 'text/xml');
-    const items = Array.from(doc.querySelectorAll('item, entry'));
-    return items.slice(0, 20).map((item, i) => {
-      const title = stripHtml(
-        item.querySelector('title')?.textContent || ''
-      );
-      const link =
-        item.querySelector('link')?.textContent ||
-        item.querySelector('link')?.getAttribute('href') || '#';
-      const pubDate =
-        item.querySelector('pubDate')?.textContent ||
-        item.querySelector('published')?.textContent ||
-        item.querySelector('updated')?.textContent || '';
-      const id = source.name + '_' + (link || i);
+    const doc = new DOMParser().parseFromString(xml, 'text/xml');
+    return Array.from(doc.querySelectorAll('item, entry')).slice(0,20).map((item,i) => {
+      const title = stripHtml(item.querySelector('title')?.textContent||'');
+      const link = (item.querySelector('link')?.textContent||item.querySelector('link')?.getAttribute('href')||'#').trim();
+      const pubDate = item.querySelector('pubDate,published,updated')?.textContent||'';
       const coins = extractCoins(title);
-      const sentiment = getSentiment(title);
-      return { id, title, url: link.trim(), source: source.name, sourceEmoji: source.emoji, published: pubDate, coins, sentiment, isNew: false };
-    }).filter(n => n.title && n.title.length > 5);
+      return { id:source.name+'_'+link, title, url:link, source:source.name, sourceEmoji:source.emoji, published:pubDate, coins, sentiment:getSentiment(title), isNew:false };
+    }).filter(n => n.title && n.title.length>5);
+  }catch(e){ return []; }
+}
+async function fetchGNews(){
+  try{
+    const res = await fetch('https://gnews.io/api/v4/search?q=crypto+bitcoin+ethereum&lang=en&max=20&token=demo',{signal:AbortSignal.timeout(8000)});
+    if(!res.ok) return [];
+    const data = await res.json();
+    return (data.articles||[]).map((a,i)=>({id:'gn_'+i+'_'+Date.now(),title:a.title||'',url:a.url||'#',source:a.source?.name||'GNews',sourceEmoji:'📰',published:a.publishedAt,coins:extractCoins(a.title+' '+(a.description||'')),sentiment:getSentiment(a.title),isNew:false}));
   }catch(e){ return []; }
 }
 
-// ── GNews fallback (permite CORS nativ) ──
-async function fetchGNews(){
-  try{
-    const url = `https://gnews.io/api/v4/search?q=crypto+bitcoin+ethereum&lang=en&max=20&token=demo`;
-    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
-    if(!res.ok) return [];
-    const data = await res.json();
-    return (data.articles || []).map((a, i) => ({
-      id: 'gnews_' + i + '_' + Date.now(),
-      title: a.title || '',
-      url: a.url || '#',
-      source: a.source?.name || 'GNews',
-      sourceEmoji: '📰',
-      published: a.publishedAt,
-      coins: extractCoins(a.title + ' ' + (a.description||'')),
-      sentiment: getSentiment(a.title),
-      isNew: false
-    }));
-  }catch(e){ return []; }
+// ── SENTIMENT GLOBAL ──
+function updateSentiment(){
+  const bull = allNews.filter(n=>n.sentiment==='bullish').length;
+  const bear = allNews.filter(n=>n.sentiment==='bearish').length;
+  const total = bull + bear;
+  if(!total) return;
+  const bullPct = Math.round(bull/total*100);
+  const bearPct = 100 - bullPct;
+  const bar = document.getElementById('sentBar');
+  const label = document.getElementById('sentLabel');
+  const sub = document.getElementById('sentSub');
+  const fill = document.getElementById('sentFill');
+  const icon = document.getElementById('sentIcon');
+  const bullEl = document.getElementById('sentBullPct');
+  const bearEl = document.getElementById('sentBearPct');
+
+  bar.className = 'sentiment-bar ' + (bullPct>55?'bull':bullPct<45?'bear':'neut');
+  label.className = 'sent-label ' + (bullPct>55?'bull':bullPct<45?'bear':'neut');
+  fill.className = 'sent-fill ' + (bullPct>55?'bull':'bear');
+
+  if(bullPct>60){ label.textContent='PIAȚA: BULLISH 🚀'; icon.textContent='🟢'; }
+  else if(bullPct>55){ label.textContent='TENDINȚĂ: BULLISH'; icon.textContent='📈'; }
+  else if(bullPct<40){ label.textContent='PIAȚA: BEARISH 🔻'; icon.textContent='🔴'; }
+  else if(bullPct<45){ label.textContent='TENDINȚĂ: BEARISH'; icon.textContent='📉'; }
+  else { label.textContent='PIAȚA: NEUTRU'; icon.textContent='📊'; }
+
+  sub.textContent = `${bull} știri bullish · ${bear} bearish · din ${allNews.length} total`;
+  fill.style.width = bullPct + '%';
+  bullEl.textContent = '▲ ' + bullPct + '%';
+  bearEl.textContent = '▼ ' + bearPct + '%';
+}
+
+// ── TRENDING COINS ──
+function updateTrending(){
+  const counts = {};
+  allNews.forEach(n => n.coins.forEach(c => { counts[c] = (counts[c]||0)+1; }));
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,8);
+  const grid = document.getElementById('trendingGrid');
+  if(!sorted.length){ grid.innerHTML='<div style="color:var(--txt3);font-size:.6rem;padding:8px">Niciun coin menționat frecvent</div>'; return; }
+  grid.innerHTML = sorted.map(([coin, cnt]) => {
+    const p = priceCache[coin];
+    const priceStr = p ? formatPrice(p.price) : '';
+    const chgStr = p ? (p.chg>=0?'+':'')+p.chg.toFixed(2)+'%' : '';
+    const chgCls = p ? (p.chg>0?'up':p.chg<0?'down':'') : '';
+    return `<div class="trend-card" onclick="filterByCoin('${coin}')">
+      <div class="trend-coin">${coin}</div>
+      <div class="trend-count">${cnt} știri</div>
+      ${p?`<div class="trend-price ${chgCls}">${priceStr} <span class="trend-chg">${chgStr}</span></div>`:''}
+    </div>`;
+  }).join('');
+}
+function formatPrice(p){
+  if(p>=1000) return '$'+p.toLocaleString('en',{maximumFractionDigits:0});
+  if(p>=1) return '$'+p.toFixed(2);
+  if(p>=0.01) return '$'+p.toFixed(4);
+  return '$'+p.toFixed(6);
 }
 
 // ── SENTIMENT ──
 function getSentiment(title){
-  const t = (title||'').toLowerCase();
+  const t=(title||'').toLowerCase();
   if(['delist','removes trading','suspend trading'].some(w=>t.includes(w))) return 'delisting';
   if(['lists ','listing','adds trading','new trading pair','now available on'].some(w=>t.includes(w))) return 'listing';
   if(['breaking','urgent','major','critical','massive','historic'].some(w=>t.includes(w))) return 'important';
-  const bull = ['surge','pump','bull','moon','rally','gains','rises','hits ath','record high','launch','partnership','adoption','soars','jumps','breakout'].filter(w=>t.includes(w)).length;
-  const bear = ['crash','dump','bear','falls','drops','plunges','hack','scam','ban','liquidat','warning','risk','tumbles','sinks'].filter(w=>t.includes(w)).length;
-  if(bull > bear) return 'bullish';
-  if(bear > bull) return 'bearish';
+  const bull=['surge','pump','bull','moon','rally','gains','rises','hits ath','record high','launch','partnership','adoption','soars','jumps','breakout'].filter(w=>t.includes(w)).length;
+  const bear=['crash','dump','bear','falls','drops','plunges','hack','scam','ban','liquidat','warning','risk','tumbles','sinks'].filter(w=>t.includes(w)).length;
+  if(bull>bear) return 'bullish';
+  if(bear>bull) return 'bearish';
   return 'neutral';
 }
 
-// ── EXTRACT COINS ──
-const COINS = ['BTC','ETH','BNB','SOL','XRP','ADA','DOGE','MATIC','DOT','AVAX','LINK','UNI','ATOM','LTC','BCH','ALGO','VET','FTM','NEAR','SAND','MANA','AXS','GALA','APE','OP','ARB','SUI','SEI','TIA','INJ','HYPE','WLD','PEPE','SHIB','FLOKI','TON','BONK','WIF','JUP','PYTH','BLUR','IMX','ENS','CRV','AAVE','COMP','MKR','GRT','LDO'];
+// ── COINS ──
+const COINS=['BTC','ETH','BNB','SOL','XRP','ADA','DOGE','MATIC','DOT','AVAX','LINK','UNI','ATOM','LTC','BCH','ALGO','VET','FTM','NEAR','SAND','MANA','AXS','GALA','APE','OP','ARB','SUI','SEI','TIA','INJ','HYPE','WLD','PEPE','SHIB','FLOKI','TON','BONK','WIF','JUP','PYTH','BLUR','IMX','ENS','CRV','AAVE','COMP','MKR','GRT','LDO'];
 function extractCoins(text){
-  const up = text.toUpperCase();
-  return COINS.filter(c => new RegExp('\\b'+c+'\\b').test(up));
+  const up=text.toUpperCase();
+  return COINS.filter(c=>new RegExp('\\b'+c+'\\b').test(up));
 }
 function stripHtml(str){
   return str.replace(/<[^>]*>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/\s+/g,' ').trim();
 }
 
+// ── TIME FILTER ──
+let timeFilterHours = 0;
+function setTimeFilter(hours, el){
+  timeFilterHours = hours;
+  document.querySelectorAll('.tfbtn').forEach(t=>t.classList.remove('act'));
+  el.classList.add('act');
+  applyFilters();
+}
+
+// ── BOOKMARKS ──
+function toggleBookmark(id, btn){
+  if(savedIds.has(id)){ savedIds.delete(id); btn.classList.remove('saved'); btn.textContent='🔖 Salvează'; }
+  else { savedIds.add(id); btn.classList.add('saved'); btn.textContent='🔖 Salvat'; }
+  localStorage.setItem('cnews_saved', JSON.stringify([...savedIds]));
+}
+
+// ── SHARE ──
+function shareWhatsApp(title, url){ window.open('https://wa.me/?text='+encodeURIComponent(title+'\n'+url),'_blank'); }
+function shareTelegram(title, url){ window.open('https://t.me/share/url?url='+encodeURIComponent(url)+'&text='+encodeURIComponent(title),'_blank'); }
+
 // ── FILTERS ──
 function setFilter(f, el, cls='act'){
-  currentFilter = f;
-  document.querySelectorAll('.ftag').forEach(t=>t.classList.remove('act','act-red','act-yellow','act-blue','act-orange'));
+  currentFilter=f;
+  document.querySelectorAll('.ftag').forEach(t=>t.classList.remove('act','act-red','act-yellow','act-blue','act-orange','act-purple'));
   el.classList.add(cls);
   applyFilters();
 }
 function applyFilters(){
-  const q = (document.getElementById('searchInp').value||'').toLowerCase().trim();
-  let filtered = [...allNews];
-  if(currentFilter==='bullish')    filtered=filtered.filter(n=>n.sentiment==='bullish');
-  else if(currentFilter==='bearish')    filtered=filtered.filter(n=>n.sentiment==='bearish');
-  else if(currentFilter==='important')  filtered=filtered.filter(n=>n.sentiment==='important');
-  else if(currentFilter==='listing')    filtered=filtered.filter(n=>['listing','delisting'].includes(n.sentiment));
-  else if(currentFilter==='watchlist')  filtered=filtered.filter(n=>n.coins.some(c=>watchlist.includes(c)));
+  const q=(document.getElementById('searchInp').value||'').toLowerCase().trim();
+  const now=Date.now();
+  let filtered=[...allNews];
+
+  // Time filter
+  if(timeFilterHours>0){
+    const cutoff=now-timeFilterHours*3600000;
+    filtered=filtered.filter(n=>new Date(n.published).getTime()>=cutoff);
+  }
+
+  // Type filter
+  if(currentFilter==='bullish') filtered=filtered.filter(n=>n.sentiment==='bullish');
+  else if(currentFilter==='bearish') filtered=filtered.filter(n=>n.sentiment==='bearish');
+  else if(currentFilter==='important') filtered=filtered.filter(n=>n.sentiment==='important');
+  else if(currentFilter==='listing') filtered=filtered.filter(n=>['listing','delisting'].includes(n.sentiment));
+  else if(currentFilter==='watchlist') filtered=filtered.filter(n=>n.coins.some(c=>watchlist.includes(c)));
+  else if(currentFilter==='saved') filtered=filtered.filter(n=>savedIds.has(n.id));
+
   if(q) filtered=filtered.filter(n=>n.title.toLowerCase().includes(q)||n.coins.some(c=>c.toLowerCase().includes(q))||(n.source||'').toLowerCase().includes(q));
+
   renderNews(filtered);
-  document.getElementById('feedCount').textContent = filtered.length + ' știri';
+  document.getElementById('feedCount').textContent=filtered.length+' știri';
 }
 
-const SENT_MAP = {
-  bullish:  {cls:'na-bullish',  tag:'nt-bullish',  lbl:'BULLISH'},
-  bearish:  {cls:'na-bearish',  tag:'nt-bearish',  lbl:'BEARISH'},
+const SENT_MAP={
+  bullish:{cls:'na-bullish',tag:'nt-bullish',lbl:'BULLISH'},
+  bearish:{cls:'na-bearish',tag:'nt-bearish',lbl:'BEARISH'},
   important:{cls:'na-important',tag:'nt-important',lbl:'IMPORTANT'},
-  neutral:  {cls:'na-neutral',  tag:'nt-neutral',  lbl:'NEUTRU'},
-  listing:  {cls:'na-listing',  tag:'nt-listing',  lbl:'LISTARE'},
+  neutral:{cls:'na-neutral',tag:'nt-neutral',lbl:'NEUTRU'},
+  listing:{cls:'na-listing',tag:'nt-listing',lbl:'LISTARE'},
   delisting:{cls:'na-delisting',tag:'nt-delisting',lbl:'DELISTARE'},
 };
 
 function renderNews(items){
-  const list = document.getElementById('newsList');
+  const list=document.getElementById('newsList');
   if(!items.length){
     list.innerHTML=`<div class="empty"><div class="empty-icon">📭</div><div class="empty-txt">Nicio știre găsită</div></div>`;
     return;
   }
-  list.innerHTML = items.map(n=>{
-    const s = SENT_MAP[n.sentiment]||SENT_MAP.neutral;
-    const ago = timeAgo(n.published);
-    const pills = n.coins.slice(0,6).map(c=>`<span class="coin-pill${watchlist.includes(c)?' wl':''}" onclick="filterByCoin('${c}')">${c}</span>`).join('');
+  list.innerHTML=items.map(n=>{
+    const s=SENT_MAP[n.sentiment]||SENT_MAP.neutral;
+    const ago=timeAgo(n.published);
+    const isSaved=savedIds.has(n.id);
+    const pills=n.coins.slice(0,5).map(c=>{
+      const p=priceCache[c];
+      const pStr=p?`<span class="coin-price ${p.chg>0?'cp-up':p.chg<0?'cp-down':'cp-neu'}">${p.chg>=0?'+':''}${p.chg.toFixed(1)}%</span>`:'';
+      return`<span class="coin-pill${watchlist.includes(c)?' wl':''}" onclick="filterByCoin('${c}')">${c}${pStr}</span>`;
+    }).join('');
     return`<div class="news-item${n.isNew?' new-item':''}">
       <div class="news-accent ${s.cls}"></div>
       <div class="news-body">
@@ -651,6 +981,11 @@ function renderNews(items){
           <span class="news-tag ${s.tag}">${s.lbl}</span>
           ${pills}
         </div>
+        <div class="news-actions">
+          <button class="btn-action btn-bookmark${isSaved?' saved':''}" onclick="toggleBookmark('${n.id}',this)">${isSaved?'🔖 Salvat':'🔖 Salvează'}</button>
+          <button class="btn-action btn-share" onclick="shareWhatsApp('${n.title.replace(/'/g,'').slice(0,80)}','${n.url}')">📱 WhatsApp</button>
+          <button class="btn-action btn-tg" onclick="shareTelegram('${n.title.replace(/'/g,'').slice(0,80)}','${n.url}')">✈️ Telegram</button>
+        </div>
       </div>
     </div>`;
   }).join('');
@@ -658,41 +993,55 @@ function renderNews(items){
 function filterByCoin(coin){ document.getElementById('searchInp').value=coin; applyFilters(); }
 
 function updateStats(){
-  document.getElementById('st-total').textContent = allNews.length;
-  document.getElementById('st-bull').textContent  = allNews.filter(n=>n.sentiment==='bullish').length;
-  document.getElementById('st-bear').textContent  = allNews.filter(n=>n.sentiment==='bearish').length;
-  document.getElementById('st-imp').textContent   = allNews.filter(n=>['important','listing','delisting'].includes(n.sentiment)).length;
+  document.getElementById('st-total').textContent=allNews.length;
+  document.getElementById('st-bull').textContent=allNews.filter(n=>n.sentiment==='bullish').length;
+  document.getElementById('st-bear').textContent=allNews.filter(n=>n.sentiment==='bearish').length;
+  document.getElementById('st-imp').textContent=allNews.filter(n=>['important','listing','delisting'].includes(n.sentiment)).length;
 }
 
 // ── AUTO REFRESH ──
 function startAutoRefresh(){
   clearInterval(cdTimer);
-  if(!document.getElementById('autoChk').checked){ document.getElementById('cdWrap').style.display='none'; return; }
+  if(!document.getElementById('autoChk').checked){document.getElementById('cdWrap').style.display='none';return;}
   document.getElementById('cdWrap').style.display='flex';
-  const secs = parseInt(document.getElementById('autoInt').value)||300;
-  cdSec = secs; updateCd();
-  cdTimer = setInterval(()=>{ cdSec--; updateCd(); if(cdSec<=0){cdSec=secs;loadAll();} }, 1000);
+  const secs=parseInt(document.getElementById('autoInt').value)||300;
+  cdSec=secs;updateCd();
+  cdTimer=setInterval(()=>{cdSec--;updateCd();if(cdSec<=0){cdSec=secs;loadAll();}},1000);
 }
-function updateCd(){ const m=Math.floor(cdSec/60),s=cdSec%60; document.getElementById('cdVal').textContent=m>0?`${m}m ${s}s`:`${s}s`; }
-function toggleAuto(){ startAutoRefresh(); }
-function changeInterval(){ cdSec=parseInt(document.getElementById('autoInt').value)||300; startAutoRefresh(); }
+function updateCd(){const m=Math.floor(cdSec/60),s=cdSec%60;document.getElementById('cdVal').textContent=m>0?`${m}m ${s}s`:`${s}s`;}
+function toggleAuto(){startAutoRefresh();}
+function changeInterval(){cdSec=parseInt(document.getElementById('autoInt').value)||300;startAutoRefresh();}
 
 // ── UTILS ──
 function timeAgo(ts){
-  if(!ts) return '';
-  const d=new Date(ts); if(isNaN(d)) return '';
+  if(!ts)return'';const d=new Date(ts);if(isNaN(d))return'';
   const diff=Math.floor((Date.now()-d)/1000);
-  if(diff<60) return diff+'s în urmă';
-  if(diff<3600) return Math.floor(diff/60)+'m în urmă';
-  if(diff<86400) return Math.floor(diff/3600)+'h în urmă';
+  if(diff<60)return diff+'s în urmă';
+  if(diff<3600)return Math.floor(diff/60)+'m în urmă';
+  if(diff<86400)return Math.floor(diff/3600)+'h în urmă';
   return Math.floor(diff/86400)+'z în urmă';
 }
-function showErr(msg){ const el=document.getElementById('errBar'); el.textContent=msg; el.classList.add('show'); }
-function hideErr(){ document.getElementById('errBar').classList.remove('show'); }
+function showErr(msg){const el=document.getElementById('errBar');el.textContent=msg;el.classList.add('show');}
+function hideErr(){document.getElementById('errBar').classList.remove('show');}
 function showLoading(){
   if(!allNews.length)
-    document.getElementById('newsList').innerHTML=`<div class="loading"><div class="loading-spinner"></div><div class="loading-txt">Se încarcă din ${RSS_SOURCES.length} surse...</div></div>`;
+    document.getElementById('newsList').innerHTML=`<div class="loading"><div class="spinner"></div><div class="loading-txt">Se încarcă din ${RSS_SOURCES.length} surse...</div></div>`;
 }
+
+// ── THEME ──
+function setTheme(t, btn){
+  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('cnews_theme', t);
+  document.querySelectorAll('.theme-btn').forEach(b => b.classList.remove('active'));
+  if(btn) btn.classList.add('active');
+}
+(function initTheme(){
+  const t = localStorage.getItem('cnews_theme') || 'slate';
+  document.documentElement.setAttribute('data-theme', t);
+  const btn = document.querySelector(`.theme-btn[data-t="${t}"]`);
+  if(btn){ document.querySelectorAll('.theme-btn').forEach(b=>b.classList.remove('active')); btn.classList.add('active'); }
+})();
+
 </script>
 </body>
 </html>
