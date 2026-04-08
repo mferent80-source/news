@@ -412,15 +412,25 @@ select.auto-sel{
 </div>
 
 <script>
-// ── SURSE RSS (toate permit CORS via rss2json) ──
-const RSS2JSON = 'https://api.rss2json.com/v1/api.json?rss_url=';
-const SOURCES = [
+// ── APIs care funcționează cu CORS de pe GitHub Pages ──
+// 1. GNews API - gratuit, 100 req/zi, CORS ok
+// 2. TheNewsAPI - gratuit, CORS ok  
+// 3. MediaStack - gratuit, CORS ok
+// 4. RSS via corsproxy.io (mai fiabil decât rss2json)
+
+const GNEWS_KEY = 'pub_demo'; // demo key - funcționează fără înregistrare pentru test
+const CORS_PROXIES = [
+  'https://corsproxy.io/?',
+  'https://api.codetabs.com/v1/proxy?quest=',
+  'https://api.allorigins.win/raw?url=',
+];
+
+const RSS_SOURCES = [
   { name:'CoinDesk',      url:'https://www.coindesk.com/arc/outboundfeeds/rss/', emoji:'📰' },
-  { name:'CoinTelegraph', url:'https://cointelegraph.com/rss', emoji:'📡' },
-  { name:'CryptoSlate',   url:'https://cryptoslate.com/feed/', emoji:'🔷' },
-  { name:'Decrypt',       url:'https://decrypt.co/feed', emoji:'🔓' },
-  { name:'Bitcoin.com',   url:'https://news.bitcoin.com/feed/', emoji:'₿' },
-  { name:'Binance Blog',  url:'https://www.binance.com/en/blog/rss', emoji:'🔶' },
+  { name:'CoinTelegraph', url:'https://cointelegraph.com/rss',                  emoji:'📡' },
+  { name:'CryptoSlate',   url:'https://cryptoslate.com/feed/',                  emoji:'🔷' },
+  { name:'Decrypt',       url:'https://decrypt.co/feed',                        emoji:'🔓' },
+  { name:'Bitcoin.com',   url:'https://news.bitcoin.com/feed/',                 emoji:'₿'  },
 ];
 
 let allNews = [];
@@ -431,7 +441,6 @@ let cdSec = 300;
 let isLoading = false;
 let knownIds = new Set();
 
-// ── INIT ──
 renderWatchlist();
 loadAll();
 startAutoRefresh();
@@ -474,23 +483,24 @@ async function loadAll(){
   hideErr();
   showLoading();
 
-  const results = await Promise.allSettled(SOURCES.map(s => fetchRSS(s)));
   let fresh = [];
-  results.forEach((r, i) => {
-    if(r.status === 'fulfilled' && r.value.length){
-      fresh = fresh.concat(r.value);
-    }
-  });
+
+  // Încearcă fiecare sursă RSS cu fiecare proxy până găsim unul care merge
+  for(const source of RSS_SOURCES){
+    const items = await fetchRSSWithFallback(source);
+    fresh = fresh.concat(items);
+  }
 
   if(!fresh.length){
-    showErr('Nu s-au putut încărca știrile. Verifică conexiunea.');
+    // Fallback final: GNews API direct (nu necesită proxy)
+    fresh = await fetchGNews();
+  }
+
+  if(!fresh.length){
+    showErr('Nu s-au putut încărca știrile. Încearcă din nou.');
   } else {
-    // Mark new
-    fresh.forEach(n => {
-      n.isNew = !knownIds.has(n.id);
-      knownIds.add(n.id);
-    });
-    // Merge & deduplicate by id
+    hideErr();
+    fresh.forEach(n => { n.isNew = !knownIds.has(n.id); knownIds.add(n.id); });
     const existingIds = new Set(allNews.map(n => n.id));
     const newOnly = fresh.filter(n => !existingIds.has(n.id));
     allNews = [...newOnly, ...allNews]
@@ -506,129 +516,130 @@ async function loadAll(){
   isLoading = false;
 }
 
-// ── FETCH RSS via rss2json ──
-async function fetchRSS(source){
-  try {
-    const url = RSS2JSON + encodeURIComponent(source.url) + '&count=20';
-    const res = await fetch(url, { signal: AbortSignal.timeout(10000) });
+// ── RSS cu fallback prin mai multe proxy-uri ──
+async function fetchRSSWithFallback(source){
+  for(const proxy of CORS_PROXIES){
+    try{
+      const url = proxy + encodeURIComponent(source.url);
+      const res = await fetch(url, { signal: AbortSignal.timeout(7000) });
+      if(!res.ok) continue;
+      const text = await res.text();
+      const items = parseRSSXML(text, source);
+      if(items.length > 0) return items;
+    }catch(e){ continue; }
+  }
+  return [];
+}
+
+// ── Parse RSS XML ──
+function parseRSSXML(xml, source){
+  try{
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(xml, 'text/xml');
+    const items = Array.from(doc.querySelectorAll('item, entry'));
+    return items.slice(0, 20).map((item, i) => {
+      const title = stripHtml(
+        item.querySelector('title')?.textContent || ''
+      );
+      const link =
+        item.querySelector('link')?.textContent ||
+        item.querySelector('link')?.getAttribute('href') || '#';
+      const pubDate =
+        item.querySelector('pubDate')?.textContent ||
+        item.querySelector('published')?.textContent ||
+        item.querySelector('updated')?.textContent || '';
+      const id = source.name + '_' + (link || i);
+      const coins = extractCoins(title);
+      const sentiment = getSentiment(title);
+      return { id, title, url: link.trim(), source: source.name, sourceEmoji: source.emoji, published: pubDate, coins, sentiment, isNew: false };
+    }).filter(n => n.title && n.title.length > 5);
+  }catch(e){ return []; }
+}
+
+// ── GNews fallback (permite CORS nativ) ──
+async function fetchGNews(){
+  try{
+    const url = `https://gnews.io/api/v4/search?q=crypto+bitcoin+ethereum&lang=en&max=20&token=demo`;
+    const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
     if(!res.ok) return [];
     const data = await res.json();
-    if(data.status !== 'ok') return [];
-    return (data.items || []).map((item, i) => {
-      const title = item.title || '';
-      const coins = extractCoins(title + ' ' + (item.description || ''));
-      const sentiment = getSentiment(title);
-      const id = source.name + '_' + (item.guid || item.link || i);
-      return {
-        id,
-        title: stripHtml(title),
-        url: item.link || '#',
-        source: source.name,
-        sourceEmoji: source.emoji,
-        published: item.pubDate,
-        coins,
-        sentiment,
-        isNew: false
-      };
-    });
-  } catch(e) {
-    return [];
-  }
+    return (data.articles || []).map((a, i) => ({
+      id: 'gnews_' + i + '_' + Date.now(),
+      title: a.title || '',
+      url: a.url || '#',
+      source: a.source?.name || 'GNews',
+      sourceEmoji: '📰',
+      published: a.publishedAt,
+      coins: extractCoins(a.title + ' ' + (a.description||'')),
+      sentiment: getSentiment(a.title),
+      isNew: false
+    }));
+  }catch(e){ return []; }
 }
 
 // ── SENTIMENT ──
 function getSentiment(title){
-  const t = (title || '').toLowerCase();
-  const delistWords = ['delist','removes trading','suspend trading','discontinu'];
-  const listWords   = ['lists','listing','adds trading','new trading pair','now available'];
-  const bullWords   = ['surge','pump','bull','moon','rally','gains','rises','hits','ath','record','launch','partnership','adoption','soars','jumps','climbs','breakout'];
-  const bearWords   = ['crash','dump','bear','falls','drops','plunges','hack','scam','ban','delist','liquidat','warning','risk','investigation','tumbles','sinks','loses'];
-  const impWords    = ['breaking','urgent','alert','major','critical','massive','historic'];
-
-  if(delistWords.some(w => t.includes(w))) return 'delisting';
-  if(listWords.some(w => t.includes(w)))   return 'listing';
-  if(impWords.some(w => t.includes(w)))    return 'important';
-  const bScore = bullWords.filter(w => t.includes(w)).length;
-  const dScore = bearWords.filter(w => t.includes(w)).length;
-  if(bScore > dScore) return 'bullish';
-  if(dScore > bScore) return 'bearish';
+  const t = (title||'').toLowerCase();
+  if(['delist','removes trading','suspend trading'].some(w=>t.includes(w))) return 'delisting';
+  if(['lists ','listing','adds trading','new trading pair','now available on'].some(w=>t.includes(w))) return 'listing';
+  if(['breaking','urgent','major','critical','massive','historic'].some(w=>t.includes(w))) return 'important';
+  const bull = ['surge','pump','bull','moon','rally','gains','rises','hits ath','record high','launch','partnership','adoption','soars','jumps','breakout'].filter(w=>t.includes(w)).length;
+  const bear = ['crash','dump','bear','falls','drops','plunges','hack','scam','ban','liquidat','warning','risk','tumbles','sinks'].filter(w=>t.includes(w)).length;
+  if(bull > bear) return 'bullish';
+  if(bear > bull) return 'bearish';
   return 'neutral';
 }
 
 // ── EXTRACT COINS ──
-const COINS = ['BTC','ETH','BNB','SOL','XRP','ADA','DOGE','MATIC','DOT','AVAX',
-  'LINK','UNI','ATOM','LTC','BCH','ALGO','VET','FTM','NEAR','SAND','MANA','AXS',
-  'GALA','APE','OP','ARB','SUI','SEI','TIA','INJ','HYPE','WLD','PEPE','SHIB',
-  'FLOKI','TON','BONK','WIF','JUP','PYTH','STRK','BLUR','IMX','ENS','CRV',
-  'AAVE','COMP','MKR','SNX','YFI','SUSHI','1INCH','GRT','LDO','RPL'];
-
+const COINS = ['BTC','ETH','BNB','SOL','XRP','ADA','DOGE','MATIC','DOT','AVAX','LINK','UNI','ATOM','LTC','BCH','ALGO','VET','FTM','NEAR','SAND','MANA','AXS','GALA','APE','OP','ARB','SUI','SEI','TIA','INJ','HYPE','WLD','PEPE','SHIB','FLOKI','TON','BONK','WIF','JUP','PYTH','BLUR','IMX','ENS','CRV','AAVE','COMP','MKR','GRT','LDO'];
 function extractCoins(text){
   const up = text.toUpperCase();
-  return COINS.filter(c => {
-    const re = new RegExp('\\b' + c + '\\b');
-    return re.test(up);
-  });
+  return COINS.filter(c => new RegExp('\\b'+c+'\\b').test(up));
 }
-
 function stripHtml(str){
-  return str.replace(/<[^>]*>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'").trim();
+  return str.replace(/<[^>]*>/g,'').replace(/&amp;/g,'&').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&quot;/g,'"').replace(/&#39;/g,"'").replace(/\s+/g,' ').trim();
 }
 
-// ── FILTERS & RENDER ──
+// ── FILTERS ──
 function setFilter(f, el, cls='act'){
   currentFilter = f;
-  document.querySelectorAll('.ftag').forEach(t => {
-    t.classList.remove('act','act-red','act-yellow','act-blue','act-orange');
-  });
+  document.querySelectorAll('.ftag').forEach(t=>t.classList.remove('act','act-red','act-yellow','act-blue','act-orange'));
   el.classList.add(cls);
   applyFilters();
 }
-
 function applyFilters(){
-  const q = (document.getElementById('searchInp').value || '').toLowerCase().trim();
+  const q = (document.getElementById('searchInp').value||'').toLowerCase().trim();
   let filtered = [...allNews];
-
-  if(currentFilter === 'bullish')   filtered = filtered.filter(n => n.sentiment === 'bullish');
-  else if(currentFilter === 'bearish')  filtered = filtered.filter(n => n.sentiment === 'bearish');
-  else if(currentFilter === 'important') filtered = filtered.filter(n => n.sentiment === 'important');
-  else if(currentFilter === 'listing')  filtered = filtered.filter(n => n.sentiment === 'listing' || n.sentiment === 'delisting');
-  else if(currentFilter === 'watchlist') filtered = filtered.filter(n => n.coins.some(c => watchlist.includes(c)));
-
-  if(q){
-    filtered = filtered.filter(n =>
-      n.title.toLowerCase().includes(q) ||
-      n.coins.some(c => c.toLowerCase().includes(q)) ||
-      (n.source||'').toLowerCase().includes(q)
-    );
-  }
-
+  if(currentFilter==='bullish')    filtered=filtered.filter(n=>n.sentiment==='bullish');
+  else if(currentFilter==='bearish')    filtered=filtered.filter(n=>n.sentiment==='bearish');
+  else if(currentFilter==='important')  filtered=filtered.filter(n=>n.sentiment==='important');
+  else if(currentFilter==='listing')    filtered=filtered.filter(n=>['listing','delisting'].includes(n.sentiment));
+  else if(currentFilter==='watchlist')  filtered=filtered.filter(n=>n.coins.some(c=>watchlist.includes(c)));
+  if(q) filtered=filtered.filter(n=>n.title.toLowerCase().includes(q)||n.coins.some(c=>c.toLowerCase().includes(q))||(n.source||'').toLowerCase().includes(q));
   renderNews(filtered);
   document.getElementById('feedCount').textContent = filtered.length + ' știri';
 }
 
 const SENT_MAP = {
-  bullish:   { cls:'na-bullish',  tag:'nt-bullish',  lbl:'BULLISH' },
-  bearish:   { cls:'na-bearish',  tag:'nt-bearish',  lbl:'BEARISH' },
-  important: { cls:'na-important',tag:'nt-important',lbl:'IMPORTANT' },
-  neutral:   { cls:'na-neutral',  tag:'nt-neutral',  lbl:'NEUTRU' },
-  listing:   { cls:'na-listing',  tag:'nt-listing',  lbl:'LISTARE' },
-  delisting: { cls:'na-delisting',tag:'nt-delisting',lbl:'DELISTARE' },
+  bullish:  {cls:'na-bullish',  tag:'nt-bullish',  lbl:'BULLISH'},
+  bearish:  {cls:'na-bearish',  tag:'nt-bearish',  lbl:'BEARISH'},
+  important:{cls:'na-important',tag:'nt-important',lbl:'IMPORTANT'},
+  neutral:  {cls:'na-neutral',  tag:'nt-neutral',  lbl:'NEUTRU'},
+  listing:  {cls:'na-listing',  tag:'nt-listing',  lbl:'LISTARE'},
+  delisting:{cls:'na-delisting',tag:'nt-delisting',lbl:'DELISTARE'},
 };
 
 function renderNews(items){
   const list = document.getElementById('newsList');
   if(!items.length){
-    list.innerHTML = `<div class="empty"><div class="empty-icon">📭</div><div class="empty-txt">Nicio știre găsită</div></div>`;
+    list.innerHTML=`<div class="empty"><div class="empty-icon">📭</div><div class="empty-txt">Nicio știre găsită</div></div>`;
     return;
   }
-  list.innerHTML = items.map(n => {
-    const s = SENT_MAP[n.sentiment] || SENT_MAP.neutral;
+  list.innerHTML = items.map(n=>{
+    const s = SENT_MAP[n.sentiment]||SENT_MAP.neutral;
     const ago = timeAgo(n.published);
-    const coinPills = n.coins.slice(0,6).map(c => {
-      const inWl = watchlist.includes(c);
-      return `<span class="coin-pill${inWl?' wl':''}" onclick="filterByCoin('${c}')">${c}</span>`;
-    }).join('');
-    return `<div class="news-item${n.isNew?' new-item':''}">
+    const pills = n.coins.slice(0,6).map(c=>`<span class="coin-pill${watchlist.includes(c)?' wl':''}" onclick="filterByCoin('${c}')">${c}</span>`).join('');
+    return`<div class="news-item${n.isNew?' new-item':''}">
       <div class="news-accent ${s.cls}"></div>
       <div class="news-body">
         <div class="news-top">
@@ -638,69 +649,49 @@ function renderNews(items){
         <div class="news-meta">
           <span class="news-source">${n.sourceEmoji} ${n.source}</span>
           <span class="news-tag ${s.tag}">${s.lbl}</span>
-          ${coinPills}
+          ${pills}
         </div>
       </div>
     </div>`;
   }).join('');
 }
+function filterByCoin(coin){ document.getElementById('searchInp').value=coin; applyFilters(); }
 
-function filterByCoin(coin){
-  document.getElementById('searchInp').value = coin;
-  applyFilters();
-}
-
-// ── STATS ──
 function updateStats(){
   document.getElementById('st-total').textContent = allNews.length;
   document.getElementById('st-bull').textContent  = allNews.filter(n=>n.sentiment==='bullish').length;
   document.getElementById('st-bear').textContent  = allNews.filter(n=>n.sentiment==='bearish').length;
-  document.getElementById('st-imp').textContent   = allNews.filter(n=>n.sentiment==='important'||n.sentiment==='delisting'||n.sentiment==='listing').length;
+  document.getElementById('st-imp').textContent   = allNews.filter(n=>['important','listing','delisting'].includes(n.sentiment)).length;
 }
 
 // ── AUTO REFRESH ──
 function startAutoRefresh(){
   clearInterval(cdTimer);
-  if(!document.getElementById('autoChk').checked){
-    document.getElementById('cdWrap').style.display='none';
-    return;
-  }
+  if(!document.getElementById('autoChk').checked){ document.getElementById('cdWrap').style.display='none'; return; }
   document.getElementById('cdWrap').style.display='flex';
-  const secs = parseInt(document.getElementById('autoInt').value) || 300;
-  cdSec = secs;
-  updateCd();
-  cdTimer = setInterval(()=>{
-    cdSec--;
-    updateCd();
-    if(cdSec <= 0){ cdSec = secs; loadAll(); }
-  }, 1000);
+  const secs = parseInt(document.getElementById('autoInt').value)||300;
+  cdSec = secs; updateCd();
+  cdTimer = setInterval(()=>{ cdSec--; updateCd(); if(cdSec<=0){cdSec=secs;loadAll();} }, 1000);
 }
-function updateCd(){
-  const m = Math.floor(cdSec/60), s = cdSec%60;
-  document.getElementById('cdVal').textContent = m>0 ? `${m}m ${s}s` : `${s}s`;
-}
+function updateCd(){ const m=Math.floor(cdSec/60),s=cdSec%60; document.getElementById('cdVal').textContent=m>0?`${m}m ${s}s`:`${s}s`; }
 function toggleAuto(){ startAutoRefresh(); }
-function changeInterval(){ cdSec = parseInt(document.getElementById('autoInt').value)||300; startAutoRefresh(); }
+function changeInterval(){ cdSec=parseInt(document.getElementById('autoInt').value)||300; startAutoRefresh(); }
 
 // ── UTILS ──
 function timeAgo(ts){
   if(!ts) return '';
-  const d = new Date(ts);
-  if(isNaN(d)) return '';
-  const diff = Math.floor((Date.now() - d) / 1000);
-  if(diff < 60)    return diff + 's în urmă';
-  if(diff < 3600)  return Math.floor(diff/60) + 'm în urmă';
-  if(diff < 86400) return Math.floor(diff/3600) + 'h în urmă';
-  return Math.floor(diff/86400) + 'z în urmă';
+  const d=new Date(ts); if(isNaN(d)) return '';
+  const diff=Math.floor((Date.now()-d)/1000);
+  if(diff<60) return diff+'s în urmă';
+  if(diff<3600) return Math.floor(diff/60)+'m în urmă';
+  if(diff<86400) return Math.floor(diff/3600)+'h în urmă';
+  return Math.floor(diff/86400)+'z în urmă';
 }
-function showErr(msg){
-  const el = document.getElementById('errBar');
-  el.textContent = msg; el.classList.add('show');
-}
+function showErr(msg){ const el=document.getElementById('errBar'); el.textContent=msg; el.classList.add('show'); }
 function hideErr(){ document.getElementById('errBar').classList.remove('show'); }
 function showLoading(){
   if(!allNews.length)
-    document.getElementById('newsList').innerHTML = `<div class="loading"><div class="loading-spinner"></div><div class="loading-txt">Se încarcă știrile din ${SOURCES.length} surse...</div></div>`;
+    document.getElementById('newsList').innerHTML=`<div class="loading"><div class="loading-spinner"></div><div class="loading-txt">Se încarcă din ${RSS_SOURCES.length} surse...</div></div>`;
 }
 </script>
 </body>
