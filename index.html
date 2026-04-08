@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ro">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#f4f6ff">
+<title>Crypto Hub</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500;700&family=Sora:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#f0f4ff;--bg2:#ffffff;--bg3:#f5f7ff;
+  --b1:#dde3f5;--b2:#c8d0ed;
+  --t1:#0f172a;--t2:#475569;--t3:#94a3b8;
+  --mono:'DM Mono',monospace;--head:'Sora',sans-serif;
+  --sh:0 1px 3px rgba(0,0,0,.06),0 1px 2px rgba(0,0,0,.04);
+  --shh:0 8px 30px rgba(0,0,0,.1);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{min-height:100vh;}
+body{font-family:var(--head);background:var(--bg);color:var(--t1);}
+body::before{content:'';position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:radial-gradient(ellipse 60% 50% at 10% 10%,rgba(99,102,241,.06) 0%,transparent 60%),
+    radial-gradient(ellipse 50% 60% at 90% 90%,rgba(16,185,129,.05) 0%,transparent 60%);}
+.app{position:relative;z-index:1;max-width:900px;margin:0 auto;padding:32px 16px 80px;}
+.hero{text-align:center;padding:40px 0 48px;}
+.hero-badge{display:inline-flex;align-items:center;gap:6px;background:var(--bg2);border:1px solid var(--b1);border-radius:20px;padding:5px 14px;font-size:.62rem;font-weight:600;color:var(--t3);letter-spacing:.8px;text-transform:uppercase;margin-bottom:20px;box-shadow:var(--sh);}
+.live-dot{width:6px;height:6px;border-radius:50%;background:#10b981;box-shadow:0 0 6px #10b981;animation:blink 1.5s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
+.hero-title{font-size:clamp(2rem,6vw,3.2rem);font-weight:900;letter-spacing:-1.5px;line-height:1.1;margin-bottom:14px;color:var(--t1);}
+.hero-title span{background:linear-gradient(135deg,#4f46e5,#7c3aed,#06b6d4);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;}
+.hero-sub{font-size:.9rem;color:var(--t2);max-width:500px;margin:0 auto 32px;line-height:1.6;font-weight:400;font-family:var(--mono);}
+.prices-strip{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.price-chip{background:var(--bg2);border:1px solid var(--b1);border-radius:10px;padding:8px 14px;display:flex;align-items:center;gap:10px;box-shadow:var(--sh);transition:all .2s;min-width:110px;cursor:pointer;}
+.price-chip:hover{box-shadow:var(--shh);transform:translateY(-2px);}
+.pc-sym{font-weight:800;font-size:.75rem;color:var(--t1);}
+.pc-price{font-family:var(--mono);font-size:.7rem;color:var(--t2);margin-top:1px;}
+.pc-chg{font-size:.65rem;font-weight:700;}
+.pc-chg.up{color:#059669;}.pc-chg.down{color:#dc2626;}
+.pc-loading{width:55px;height:9px;background:var(--b1);border-radius:4px;animation:shimmer 1.2s infinite;margin-top:3px;}
+@keyframes shimmer{0%,100%{opacity:.4}50%{opacity:1}}
+.btn-refresh{padding:5px 12px;border-radius:7px;font-size:.6rem;font-weight:600;border:1px solid var(--b1);background:var(--bg2);color:var(--t2);cursor:pointer;transition:all .15s;margin-top:10px;display:inline-block;}
+.btn-refresh:hover{border-color:var(--b2);color:var(--t1);}
+.section-title{font-size:.65rem;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:14px;display:flex;align-items:center;gap:10px;}
+.section-title::after{content:'';flex:1;height:1px;background:var(--b1);}
+.fg-card{background:var(--bg2);border:1px solid var(--b1);border-radius:16px;padding:18px;margin-bottom:32px;box-shadow:var(--sh);display:flex;align-items:center;gap:18px;flex-wrap:wrap;}
+.fg-gauge{width:90px;height:90px;flex-shrink:0;position:relative;}
+.fg-gauge svg{width:100%;height:100%;}
+.fg-num{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.fg-val{font-weight:900;font-size:1.5rem;line-height:1;}
+.fg-lbl{font-size:.5rem;color:var(--t3);text-transform:uppercase;letter-spacing:.7px;margin-top:2px;}
+.fg-info{flex:1;}
+.fg-title{font-weight:800;font-size:.85rem;margin-bottom:4px;}
+.fg-desc{font-size:.65rem;color:var(--t2);line-height:1.5;font-family:var(--mono);}
+.fg-updated{font-size:.58rem;color:var(--t3);margin-top:6px;}
+.apps-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:32px;}
+@media(max-width:560px){.apps-grid{grid-template-columns:1fr;}}
+.app-card{background:var(--bg2);border:1px solid var(--b1);border-radius:18px;padding:22px;text-decoration:none;color:inherit;box-shadow:var(--sh);transition:all .25s;display:flex;flex-direction:column;position:relative;overflow:hidden;}
+.app-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:3px 3px 0 0;}
+.app-card.c-indigo::before{background:linear-gradient(90deg,#4f46e5,#7c3aed);}
+.app-card.c-green::before{background:linear-gradient(90deg,#059669,#10b981);}
+.app-card.c-blue::before{background:linear-gradient(90deg,#0891b2,#06b6d4);}
+.app-card.c-amber::before{background:linear-gradient(90deg,#d97706,#f59e0b);}
+.app-card:hover{box-shadow:var(--shh);transform:translateY(-4px);border-color:var(--b2);}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:14px;}
+.card-icon{width:48px;height:48px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.ci-indigo{background:linear-gradient(135deg,rgba(79,70,229,.12),rgba(124,58,237,.08));border:1px solid rgba(79,70,229,.2);}
+.ci-green{background:linear-gradient(135deg,rgba(5,150,105,.1),rgba(16,185,129,.07));border:1px solid rgba(5,150,105,.2);}
+.ci-blue{background:linear-gradient(135deg,rgba(8,145,178,.1),rgba(6,182,212,.07));border:1px solid rgba(8,145,178,.2);}
+.ci-amber{background:linear-gradient(135deg,rgba(217,119,6,.1),rgba(245,158,11,.07));border:1px solid rgba(217,119,6,.2);}
+.card-arrow{width:28px;height:28px;border-radius:8px;background:var(--bg3);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;font-size:.8rem;color:var(--t3);transition:all .2s;flex-shrink:0;}
+.app-card:hover .card-arrow{background:var(--t1);color:#fff;border-color:var(--t1);transform:rotate(-45deg);}
+.card-name{font-weight:800;font-size:1.05rem;letter-spacing:-.3px;margin-bottom:6px;}
+.card-desc{font-size:.68rem;color:var(--t2);line-height:1.55;font-family:var(--mono);flex:1;}
+.card-tags{display:flex;gap:5px;flex-wrap:wrap;margin-top:12px;}
+.card-tag{font-size:.55rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px;padding:3px 8px;border-radius:5px;}
+.ct-indigo{background:rgba(79,70,229,.08);color:#4f46e5;border:1px solid rgba(79,70,229,.15);}
+.ct-green{background:rgba(5,150,105,.08);color:#059669;border:1px solid rgba(5,150,105,.15);}
+.ct-blue{background:rgba(8,145,178,.08);color:#0891b2;border:1px solid rgba(8,145,178,.15);}
+.ct-amber{background:rgba(217,119,6,.08);color:#d97706;border:1px solid rgba(217,119,6,.15);}
+.ct-gray{background:var(--bg3);color:var(--t3);border:1px solid var(--b1);}
+.market-row{background:var(--bg2);border:1px solid var(--b1);border-radius:12px;padding:10px 14px;margin-bottom:6px;display:flex;align-items:center;gap:10px;box-shadow:var(--sh);transition:all .15s;text-decoration:none;color:inherit;}
+.market-row:hover{border-color:var(--b2);transform:translateX(3px);}
+.mr-rank{width:22px;height:22px;border-radius:6px;background:var(--bg3);border:1px solid var(--b1);display:flex;align-items:center;justify-content:center;font-size:.58rem;font-weight:700;color:var(--t3);flex-shrink:0;}
+.mr-rank.top{background:rgba(217,119,6,.1);border-color:rgba(217,119,6,.2);color:#d97706;}
+.mr-coin{font-weight:800;font-size:.85rem;min-width:50px;}
+.mr-price{font-family:var(--mono);font-size:.75rem;color:var(--t2);flex:1;}
+.mr-chg{font-weight:700;font-size:.75rem;min-width:55px;text-align:right;}
+.mr-chg.up{color:#059669;}.mr-chg.down{color:#dc2626;}
+.mr-bar{flex:1;max-width:80px;}
+.mr-track{height:4px;background:var(--b1);border-radius:2px;overflow:hidden;}
+.mr-fill{height:100%;border-radius:2px;}
+.mr-grid{font-size:.58rem;color:#94a3b8;flex-shrink:0;}
+.footer{text-align:center;font-family:var(--mono);font-size:.6rem;color:var(--t3);padding-top:16px;display:flex;align-items:center;justify-content:center;gap:6px;flex-wrap:wrap;}
+.footer-dot{width:3px;height:3px;border-radius:50%;background:var(--b2);}
+</style>
+</head>
+<body>
+<div class="app">
+
+<div class="hero">
+  <div class="hero-badge"><div class="live-dot"></div>Crypto Tools Suite</div>
+  <h1 class="hero-title">Crypto <span>Hub</span></h1>
+  <p class="hero-sub">Toate uneltele tale de trading intr-un singur loc. Grid bots, alerte de pret, scanner de oportunitati si stiri live.</p>
+  <div class="prices-strip">
+    <div class="price-chip" id="chip-BTC" onclick="location.href='grid-calculator.html?coin=BTC'"><div><div class="pc-sym">BTC</div><div class="pc-loading"></div></div></div>
+    <div class="price-chip" id="chip-ETH" onclick="location.href='grid-calculator.html?coin=ETH'"><div><div class="pc-sym">ETH</div><div class="pc-loading"></div></div></div>
+    <div class="price-chip" id="chip-SOL" onclick="location.href='grid-calculator.html?coin=SOL'"><div><div class="pc-sym">SOL</div><div class="pc-loading"></div></div></div>
+    <div class="price-chip" id="chip-BNB" onclick="location.href='grid-calculator.html?coin=BNB'"><div><div class="pc-sym">BNB</div><div class="pc-loading"></div></div></div>
+    <div class="price-chip" id="chip-HYPE" onclick="location.href='grid-calculator.html?coin=HYPE'"><div><div class="pc-sym">HYPE</div><div class="pc-loading"></div></div></div>
+  </div>
+  <button class="btn-refresh" onclick="loadPrices()">&#8635; Actualizeaza preturi</button>
+</div>
+
+<div class="section-title">&#128561; Sentiment piata</div>
+<div class="fg-card">
+  <div class="fg-gauge">
+    <svg viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="40" fill="none" stroke="#e2e8f0" stroke-width="10" stroke-dasharray="251" stroke-dashoffset="0"/>
+      <circle id="fgArc" cx="50" cy="50" r="40" fill="none" stroke="#94a3b8" stroke-width="10" stroke-dasharray="0 251" stroke-dashoffset="-31" stroke-linecap="round" style="transition:all 1s ease"/>
+    </svg>
+    <div class="fg-num">
+      <div class="fg-val" id="fgVal">&#8212;</div>
+      <div class="fg-lbl">/ 100</div>
+    </div>
+  </div>
+  <div class="fg-info">
+    <div class="fg-title" id="fgTitle">Se incarca...</div>
+    <div class="fg-desc" id="fgDesc">Fear &amp; Greed Index masoara sentimentul pietei crypto pe o scala de la 0 la 100.</div>
+    <div class="fg-updated" id="fgUpdated"></div>
+  </div>
+</div>
+
+<div class="section-title">&#128640; Aplicatii</div>
+<div class="apps-grid">
+  <a class="app-card c-indigo" href="grid-calculator.html">
+    <div class="card-top"><div class="card-icon ci-indigo">&#9889;</div><div class="card-arrow">&#8594;</div></div>
+    <div class="card-name">Grid Bot Calculator</div>
+    <div class="card-desc">Calculeaza parametrii optimi pentru grid bots pe Pionex. Sugestii automate bazate pe volatilitatea reala, 3 profiluri de risc, tabel complet niveluri.</div>
+    <div class="card-tags">
+      <span class="card-tag ct-indigo">Pionex</span>
+      <span class="card-tag ct-indigo">Grid Bot</span>
+      <span class="card-tag ct-gray">Preturi live</span>
+      <span class="card-tag ct-gray">AI Suggest</span>
+    </div>
+  </a>
+  <a class="app-card c-green" href="price-alerter.html">
+    <div class="card-top"><div class="card-icon ci-green">&#128276;</div><div class="card-arrow">&#8594;</div></div>
+    <div class="card-name">Price Alerter</div>
+    <div class="card-desc">Setezi alerte de pret pentru orice coin. Notificari instant cand pretul atinge tinta. 4 tipuri de conditii, sunet, vibratie, istoric declansari.</div>
+    <div class="card-tags">
+      <span class="card-tag ct-green">Alerte</span>
+      <span class="card-tag ct-green">Notificari</span>
+      <span class="card-tag ct-gray">Binance Live</span>
+      <span class="card-tag ct-gray">10s refresh</span>
+    </div>
+  </a>
+  <a class="app-card c-blue" href="crypto-scanner.html">
+    <div class="card-top"><div class="card-icon ci-blue">&#128301;</div><div class="card-arrow">&#8594;</div></div>
+    <div class="card-name">Crypto Scanner</div>
+    <div class="card-desc">Scanner automat care ruleaza in fundal si trimite notificari cand gaseste oportunitati: pump/dump, RSI oversold, volum anormal, moment bun pentru grid.</div>
+    <div class="card-tags">
+      <span class="card-tag ct-blue">Auto-scan</span>
+      <span class="card-tag ct-blue">RSI + Vol</span>
+      <span class="card-tag ct-gray">Background</span>
+      <span class="card-tag ct-gray">8 semnale</span>
+    </div>
+  </a>
+  <a class="app-card c-amber" href="pionex-news.html">
+    <div class="card-top"><div class="card-icon ci-amber">&#128225;</div><div class="card-arrow">&#8594;</div></div>
+    <div class="card-name">Crypto News Live</div>
+    <div class="card-desc">Feed live de stiri din 5 surse: CoinDesk, CoinTelegraph, Decrypt si altele. Sentiment global, trending coinuri cu preturi live, bookmark si share.</div>
+    <div class="card-tags">
+      <span class="card-tag ct-amber">Stiri live</span>
+      <span class="card-tag ct-amber">5 surse</span>
+      <span class="card-tag ct-gray">Sentiment</span>
+      <span class="card-tag ct-gray">Trending</span>
+    </div>
+  </a>
+</div>
+
+<div class="section-title">&#128202; Market overview &#8212; click pentru Grid Calculator</div>
+
+<a class="market-row" href="grid-calculator.html?coin=BTC">
+  <div class="mr-rank top">1</div><div class="mr-coin">BTC</div>
+  <div class="mr-price" id="mop-BTC"><div class="pc-loading"></div></div>
+  <div class="mr-chg" id="moc-BTC">&#8212;</div>
+  <div class="mr-bar"><div class="mr-track"><div class="mr-fill" id="mob-BTC" style="width:50%;background:#94a3b8"></div></div></div>
+  <div class="mr-grid">&#9889; Grid</div>
+</a>
+<a class="market-row" href="grid-calculator.html?coin=ETH">
+  <div class="mr-rank top">2</div><div class="mr-coin">ETH</div>
+  <div class="mr-price" id="mop-ETH"><div class="pc-loading"></div></div>
+  <div class="mr-chg" id="moc-ETH">&#8212;</div>
+  <div class="mr-bar"><div class="mr-track"><div class="mr-fill" id="mob-ETH" style="width:50%;background:#94a3b8"></div></div></div>
+  <div class="mr-grid">&#9889; Grid</div>
+</a>
+<a class="market-row" href="grid-calculator.html?coin=SOL">
+  <div class="mr-rank top">3</div><div class="mr-coin">SOL</div>
+  <div class="mr-price" id="mop-SOL"><div class="pc-loading"></div></div>
+  <div class="mr-chg" id="moc-SOL">&#8212;</div>
+  <div class="mr-bar"><div class="mr-track"><div class="mr-fill" id="mob-SOL" style="width:50%;background:#94a3b8"></div></div></div>
+  <div class="mr-grid">&#9889; Grid</div>
+</a>
+<a class="market-row" href="grid-calculator.html?coin=BNB">
+  <div class="mr-rank">4</div><div class="mr-coin">BNB</div>
+  <div class="mr-price" id="mop-BNB"><div class="pc-loading"></div></div>
+  <div class="mr-chg" id="moc-BNB">&#8212;</div>
+  <div class="mr-bar"><div class="mr-track"><div class="mr-fill" id="mob-BNB" style="width:50%;background:#94a3b8"></div></div></div>
+  <div class="mr-grid">&#9889; Grid</div>
+</a>
+<a class="market-row" href="grid-calculator.html?coin=XRP">
+  <div class="mr-rank">5</div><div class="mr-coin">XRP</div>
+  <div class="mr-price" id="mop-XRP"><div class="pc-loading"></div></div>
+  <div class="mr-chg" id="moc-XRP">&#8212;</div>
+  <div class="mr-bar"><div class="mr-track"><div class="mr-fill" id="mob-XRP" style="width:50%;background:#94a3b8"></div></div></div>
+  <div class="mr-grid">&#9889; Grid</div>
+</a>
+<a class="market-row" href="grid-calculator.html?coin=HYPE">
+  <div class="mr-rank">6</div><div class="mr-coin">HYPE</div>
+  <div class="mr-price" id="mop-HYPE"><div class="pc-loading"></div></div>
+  <div class="mr-chg" id="moc-HYPE">&#8212;</div>
+  <div class="mr-bar"><div class="mr-track"><div class="mr-fill" id="mob-HYPE" style="width:50%;background:#94a3b8"></div></div></div>
+  <div class="mr-grid">&#9889; Grid</div>
+</a>
+<a class="market-row" href="grid-calculator.html?coin=DOGE">
+  <div class="mr-rank">7</div><div class="mr-coin">DOGE</div>
+  <div class="mr-price" id="mop-DOGE"><div class="pc-loading"></div></div>
+  <div class="mr-chg" id="moc-DOGE">&#8212;</div>
+  <div class="mr-bar"><div class="mr-track"><div class="mr-fill" id="mob-DOGE" style="width:50%;background:#94a3b8"></div></div></div>
+  <div class="mr-grid">&#9889; Grid</div>
+</a>
+<a class="market-row" href="grid-calculator.html?coin=ADA">
+  <div class="mr-rank">8</div><div class="mr-coin">ADA</div>
+  <div class="mr-price" id="mop-ADA"><div class="pc-loading"></div></div>
+  <div class="mr-chg" id="moc-ADA">&#8212;</div>
+  <div class="mr-bar"><div class="mr-track"><div class="mr-fill" id="mob-ADA" style="width:50%;background:#94a3b8"></div></div></div>
+  <div class="mr-grid">&#9889; Grid</div>
+</a>
+
+<div class="footer" style="margin-top:32px;">
+  <span>Crypto Hub</span><div class="footer-dot"></div>
+  <span>Preturi: Binance API</span><div class="footer-dot"></div>
+  <span>Stiri: CoinDesk &middot; CoinTelegraph</span><div class="footer-dot"></div>
+  <span id="lastUpdFooter">&#8212;</span>
+</div>
+</div>
+
+<script>
+var COINS=['BTC','ETH','SOL','BNB','XRP','HYPE','DOGE','ADA'];
+var FULL=['BTC','ETH','SOL','BNB','HYPE'];
+
+function fmtPrice(p){
+  if(!p||isNaN(p))return'--';
+  if(p>=10000)return'$'+p.toLocaleString('en',{maximumFractionDigits:0});
+  if(p>=100)return'$'+p.toFixed(2);
+  if(p>=1)return'$'+p.toFixed(4);
+  return'$'+p.toFixed(6);
+}
+
+async function loadPrices(){
+  try{
+    var res=await fetch('https://api.binance.com/api/v3/ticker/24hr',{signal:AbortSignal.timeout(7000)});
+    if(!res.ok)return;
+    var all=await res.json();
+    var map={};
+    all.forEach(function(t){map[t.symbol]=t;});
+
+    FULL.forEach(function(coin){
+      var t=map[coin+'USDT'];
+      var chip=document.getElementById('chip-'+coin);
+      if(!t||!chip)return;
+      var price=parseFloat(t.lastPrice);
+      var chg=parseFloat(t.priceChangePercent);
+      var sign=chg>=0?'+':'';
+      var cls=chg>=0?'up':'down';
+      chip.innerHTML='<div><div class="pc-sym">'+coin+'</div><div class="pc-price">'+fmtPrice(price)+'</div></div>'
+        +'<div class="pc-chg '+cls+'">'+sign+chg.toFixed(2)+'%</div>';
+    });
+
+    COINS.forEach(function(coin){
+      var t=map[coin+'USDT'];
+      if(!t)return;
+      var price=parseFloat(t.lastPrice);
+      var chg=parseFloat(t.priceChangePercent);
+      var high=parseFloat(t.highPrice);
+      var low=parseFloat(t.lowPrice);
+      var pos=Math.max(0,Math.min(100,(price-low)/(high-low)*100));
+      var ep=document.getElementById('mop-'+coin);
+      var ec=document.getElementById('moc-'+coin);
+      var eb=document.getElementById('mob-'+coin);
+      if(ep)ep.textContent=fmtPrice(price);
+      if(ec){ec.textContent=(chg>=0?'+':'')+chg.toFixed(2)+'%';ec.className='mr-chg '+(chg>=0?'up':'down');}
+      if(eb){eb.style.width=pos+'%';eb.style.background=chg>=0?'#059669':'#dc2626';}
+    });
+
+    document.getElementById('lastUpdFooter').textContent='Actualizat: '+new Date().toLocaleTimeString('ro-RO');
+  }catch(e){}
+}
+
+async function loadFearGreed(){
+  try{
+    var res=await fetch('https://api.alternative.me/fng/?limit=1',{signal:AbortSignal.timeout(6000)});
+    if(!res.ok)throw new Error();
+    var data=await res.json();
+    var val=parseInt(data.data[0].value);
+    var cls=data.data[0].value_classification;
+    var ts=data.data[0].timestamp;
+    var colors={'Extreme Fear':'#dc2626','Fear':'#ea580c','Neutral':'#d97706','Greed':'#16a34a','Extreme Greed':'#059669'};
+    var descs={
+      'Extreme Fear':'Investitorii sunt extrem de fricosi -- poate fi un semnal de cumparare.',
+      'Fear':'Frica pe piata -- preturile pot fi sub valoarea reala.',
+      'Neutral':'Sentiment echilibrat -- piata este in asteptare.',
+      'Greed':'Lacomie pe piata -- atentie la suprapretuire.',
+      'Extreme Greed':'Lacomie extrema -- risc mare de corectie iminenta.'
+    };
+    var emojis={'Extreme Fear':'😱','Fear':'😨','Neutral':'😐','Greed':'😏','Extreme Greed':'🤑'};
+    var color=colors[cls]||'#94a3b8';
+    var dashLen=(val/100)*(251*0.75);
+    document.getElementById('fgArc').style.stroke=color;
+    document.getElementById('fgArc').setAttribute('stroke-dasharray',dashLen+' 251');
+    document.getElementById('fgVal').textContent=val;
+    document.getElementById('fgVal').style.color=color;
+    document.getElementById('fgTitle').textContent=(emojis[cls]||'')+' '+cls;
+    document.getElementById('fgTitle').style.color=color;
+    document.getElementById('fgDesc').textContent=descs[cls]||'';
+    document.getElementById('fgUpdated').textContent='Actualizat: '+new Date(ts*1000).toLocaleDateString('ro-RO');
+  }catch(e){
+    document.getElementById('fgTitle').textContent='Date indisponibile';
+  }
+}
+
+loadPrices();
+loadFearGreed();
+setInterval(loadPrices,30000);
+</script>
+</body>
+</html>
