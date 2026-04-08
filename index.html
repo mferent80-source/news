@@ -349,15 +349,70 @@ body::before{
 <!-- MARKET OVERVIEW -->
 <div class="section-title">📊 Market overview — click pe orice coin pentru Grid Calculator</div>
 <div id="marketList">
-  ${['BTC','ETH','SOL','BNB','XRP','HYPE','DOGE','ADA'].map((c,i)=>`
-  <a class="market-row" href="grid-calculator.html?coin=${c}" style="text-decoration:none;color:inherit;">
-    <div class="mr-rank ${i<3?'top':''}">${i+1}</div>
-    <div class="mr-coin">${c}</div>
-    <div class="mr-price" id="mop-${c}"><div class="pc-loading"></div></div>
-    <div class="mr-chg" id="moc-${c}">—</div>
-    <div class="mr-bar"><div class="mr-track"><div class="mr-fill" id="mob-${c}" style="width:50%;background:#94a3b8"></div></div></div>
+  <a class="market-row" href="grid-calculator.html?coin=BTC" style="text-decoration:none;color:inherit;">
+    <div class="mr-rank top">1</div>
+    <div class="mr-coin">BTC</div>
+    <div class="mr-price" id="mop-BTC"><div class="pc-loading"></div></div>
+    <div class="mr-chg" id="moc-BTC">—</div>
+    <div class="mr-bar"><div class="mr-track"><div class="mr-fill" id="mob-BTC" style="width:50%;background:#94a3b8"></div></div></div>
     <div style="font-size:.58rem;color:#94a3b8;flex-shrink:0;">⚡ Grid</div>
-  </a>`).join('')}
+  </a>
+  <a class="market-row" href="grid-calculator.html?coin=ETH" style="text-decoration:none;color:inherit;">
+    <div class="mr-rank top">2</div>
+    <div class="mr-coin">ETH</div>
+    <div class="mr-price" id="mop-ETH"><div class="pc-loading"></div></div>
+    <div class="mr-chg" id="moc-ETH">—</div>
+    <div class="mr-bar"><div class="mr-track"><div class="mr-fill" id="mob-ETH" style="width:50%;background:#94a3b8"></div></div></div>
+    <div style="font-size:.58rem;color:#94a3b8;flex-shrink:0;">⚡ Grid</div>
+  </a>
+  <a class="market-row" href="grid-calculator.html?coin=SOL" style="text-decoration:none;color:inherit;">
+    <div class="mr-rank top">3</div>
+    <div class="mr-coin">SOL</div>
+    <div class="mr-price" id="mop-SOL"><div class="pc-loading"></div></div>
+    <div class="mr-chg" id="moc-SOL">—</div>
+    <div class="mr-bar"><div class="mr-track"><div class="mr-fill" id="mob-SOL" style="width:50%;background:#94a3b8"></div></div></div>
+    <div style="font-size:.58rem;color:#94a3b8;flex-shrink:0;">⚡ Grid</div>
+  </a>
+  <a class="market-row" href="grid-calculator.html?coin=BNB" style="text-decoration:none;color:inherit;">
+    <div class="mr-rank">4</div>
+    <div class="mr-coin">BNB</div>
+    <div class="mr-price" id="mop-BNB"><div class="pc-loading"></div></div>
+    <div class="mr-chg" id="moc-BNB">—</div>
+    <div class="mr-bar"><div class="mr-track"><div class="mr-fill" id="mob-BNB" style="width:50%;background:#94a3b8"></div></div></div>
+    <div style="font-size:.58rem;color:#94a3b8;flex-shrink:0;">⚡ Grid</div>
+  </a>
+  <a class="market-row" href="grid-calculator.html?coin=XRP" style="text-decoration:none;color:inherit;">
+    <div class="mr-rank">5</div>
+    <div class="mr-coin">XRP</div>
+    <div class="mr-price" id="mop-XRP"><div class="pc-loading"></div></div>
+    <div class="mr-chg" id="moc-XRP">—</div>
+    <div class="mr-bar"><div class="mr-track"><div class="mr-fill" id="mob-XRP" style="width:50%;background:#94a3b8"></div></div></div>
+    <div style="font-size:.58rem;color:#94a3b8;flex-shrink:0;">⚡ Grid</div>
+  </a>
+  <a class="market-row" href="grid-calculator.html?coin=HYPE" style="text-decoration:none;color:inherit;">
+    <div class="mr-rank">6</div>
+    <div class="mr-coin">HYPE</div>
+    <div class="mr-price" id="mop-HYPE"><div class="pc-loading"></div></div>
+    <div class="mr-chg" id="moc-HYPE">—</div>
+    <div class="mr-bar"><div class="mr-track"><div class="mr-fill" id="mob-HYPE" style="width:50%;background:#94a3b8"></div></div></div>
+    <div style="font-size:.58rem;color:#94a3b8;flex-shrink:0;">⚡ Grid</div>
+  </a>
+  <a class="market-row" href="grid-calculator.html?coin=DOGE" style="text-decoration:none;color:inherit;">
+    <div class="mr-rank">7</div>
+    <div class="mr-coin">DOGE</div>
+    <div class="mr-price" id="mop-DOGE"><div class="pc-loading"></div></div>
+    <div class="mr-chg" id="moc-DOGE">—</div>
+    <div class="mr-bar"><div class="mr-track"><div class="mr-fill" id="mob-DOGE" style="width:50%;background:#94a3b8"></div></div></div>
+    <div style="font-size:.58rem;color:#94a3b8;flex-shrink:0;">⚡ Grid</div>
+  </a>
+  <a class="market-row" href="grid-calculator.html?coin=ADA" style="text-decoration:none;color:inherit;">
+    <div class="mr-rank">8</div>
+    <div class="mr-coin">ADA</div>
+    <div class="mr-price" id="mop-ADA"><div class="pc-loading"></div></div>
+    <div class="mr-chg" id="moc-ADA">—</div>
+    <div class="mr-bar"><div class="mr-track"><div class="mr-fill" id="mob-ADA" style="width:50%;background:#94a3b8"></div></div></div>
+    <div style="font-size:.58rem;color:#94a3b8;flex-shrink:0;">⚡ Grid</div>
+  </a>
 </div>
 
 <!-- FOOTER -->
